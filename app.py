@@ -1389,7 +1389,7 @@ def main():
         st.plotly_chart(fig_time, use_container_width=True)
     
     # Faculty Workload Analysis
-    st.subheader("👨‍🏫 Faculty Workload Analysis")
+    st.subheader("Faculty Workload Analysis")
     
     # Extract faculty names and analyze their workload
     faculty_data = []
