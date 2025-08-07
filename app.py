@@ -1273,6 +1273,8 @@ def main():
         
         st.markdown("---")
     
+
+    
     # Charts section
     st.subheader("📊 Analytics")
     
