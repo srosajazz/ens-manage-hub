@@ -1207,8 +1207,18 @@ def main():
             # Create a unique ID for this card
             card_id = f"card_{instrument.lower()}"
             
+            # Map instrument codes to full names
+            instrument_names = {
+                'GUIT': 'Guitar',
+                'PNO': 'Piano', 
+                'BASS': 'Bass',
+                'DRUMS': 'Drums',
+                'VOICE': 'Voice'
+            }
+            instrument_name = instrument_names.get(instrument, instrument)
+            
             # Use a button approach that works better with Streamlit
-            if st.button(f"View {len(classes_data)} Classes", key=f"btn_{instrument.lower()}"):
+            if st.button(f"View {len(classes_data)} {instrument_name} Classes", key=f"btn_{instrument.lower()}"):
                 st.session_state['selected_instrument'] = instrument
                 st.session_state['show_modal'] = True
                 st.session_state['modal_data'] = classes_data
