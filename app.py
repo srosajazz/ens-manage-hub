@@ -19,7 +19,7 @@ st.set_page_config(
 )
 
 # Theme mode will be set in main function
-theme_mode = "Light"  # Default theme
+theme_mode = "Dark"  # Default theme (dark mode only)
 
 # Custom CSS for light and dark themes - will be applied dynamically in main function
 
@@ -449,16 +449,12 @@ def main():
             filtered_df = filtered_df.sort_values('first_faculty', ascending=True)
             filtered_df = filtered_df.drop('first_faculty', axis=1)
     
-    # Enhanced theme selector at the top
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+    # Set theme to dark mode only
+    theme_mode = "Dark"
+    
+    # Enhanced theme selector at the top (dark mode only)
+    col1, col2, col3 = st.columns([1, 1, 1])
     with col1:
-        # Theme Mode Selector with Icons
-        theme_mode = st.selectbox(
-            "🌙 Theme Mode",
-            ["Light", "Dark"],
-            key="theme_selector"
-        )
-    with col2:
         # Theme Color Selector
         theme_colors = {
             "Classic Blue": {"primary": "#4a9eff", "secondary": "#63b3ed", "accent": "#3182ce"},
@@ -469,20 +465,14 @@ def main():
             "Emerald": {"primary": "#48bb78", "secondary": "#68d391", "accent": "#38a169"}
         }
         
-        selected_color_theme = st.selectbox(
-            "🎨 Color Theme",
-            list(theme_colors.keys()),
-            key="color_theme_selector"
-        )
-        
-        # Store selected colors in session state
-        st.session_state['theme_colors'] = theme_colors[selected_color_theme]
-    with col3:
+        # Use default Classic Blue theme
+        st.session_state['theme_colors'] = theme_colors["Classic Blue"]
+    with col2:
         # Faculty Contract Management Button
         if st.button("⚙️ Faculty Contract Management", key="faculty_contract_btn"):
             st.session_state['show_faculty_management'] = not st.session_state.get('show_faculty_management', False)
-    with col4:
-        # Theme Preview
+    with col3:
+        # Theme Preview (dark mode only)
         colors = st.session_state.get('theme_colors', theme_colors["Classic Blue"])
         st.markdown(f"""
         <div style="
@@ -490,30 +480,30 @@ def main():
             gap: 8px; 
             align-items: center; 
             padding: 8px; 
-            background: {'#2d3748' if theme_mode == 'Dark' else '#f7fafc'}; 
+            background: #2d3748; 
             border-radius: 8px;
-            border: 1px solid {'#4a5568' if theme_mode == 'Dark' else '#e2e8f0'};
+            border: 1px solid #4a5568;
         ">
             <div style="
                 width: 20px; 
                 height: 20px; 
                 background: {colors['primary']}; 
                 border-radius: 50%;
-                border: 2px solid {'#ffffff' if theme_mode == 'Dark' else '#000000'};
+                border: 2px solid #ffffff;
             "></div>
             <div style="
                 width: 20px; 
                 height: 20px; 
                 background: {colors['secondary']}; 
                 border-radius: 50%;
-                border: 2px solid {'#ffffff' if theme_mode == 'Dark' else '#000000'};
+                border: 2px solid #ffffff;
             "></div>
             <div style="
                 width: 20px; 
                 height: 20px; 
                 background: {colors['accent']}; 
                 border-radius: 50%;
-                border: 2px solid {'#ffffff' if theme_mode == 'Dark' else '#000000'};
+                border: 2px solid #ffffff;
             "></div>
         </div>
         """, unsafe_allow_html=True)
@@ -2233,20 +2223,20 @@ def main():
             
             /* Additional sidebar selectors for dark theme */
             [data-testid="stSidebar"] {{
-                color: #ffffff !important;
+                color: #000000 !important;
             }}
             
             [data-testid="stSidebar"] * {{
-                color: #ffffff !important;
+                color: #000000 !important;
             }}
             
             [data-testid="stSidebar"] label {{
-                color: #ffffff !important;
+                color: #000000 !important;
                 font-weight: 600 !important;
             }}
             
             [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] h5, [data-testid="stSidebar"] h6 {{
-                color: #ffffff !important;
+                color: #000000 !important;
                 font-weight: bold !important;
             }}
             
@@ -2255,36 +2245,117 @@ def main():
             [data-testid="stSidebar"] .stTextInput label,
             [data-testid="stSidebar"] .stCheckbox label,
             [data-testid="stSidebar"] .stRadio label {{
+                color: #000000 !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Ultra-aggressive sidebar text forcing for dark theme */
+            .css-1d391kg, .css-1d391kg *, .css-1d391kg label, .css-1d391kg p, .css-1d391kg span, .css-1d391kg div,
+            [data-testid="stSidebar"], [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] div,
+            .stSidebar, .stSidebar *, .stSidebar label, .stSidebar p, .stSidebar span, .stSidebar div,
+            .css-1lcbmhc, .css-1lcbmhc *, .css-1lcbmhc label, .css-1lcbmhc p, .css-1lcbmhc span, .css-1lcbmhc div {{
+                color: #000000 !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Force all text elements in sidebar to be black */
+            .css-1d391kg [class*="st"], [data-testid="stSidebar"] [class*="st"], .stSidebar [class*="st"] {{
+                color: #000000 !important;
+            }}
+            
+            /* Specific override for any grey or dark text */
+            .css-1d391kg [style*="color: gray"], .css-1d391kg [style*="color: grey"], .css-1d391kg [style*="color: #666"],
+            [data-testid="stSidebar"] [style*="color: gray"], [data-testid="stSidebar"] [style*="color: grey"], [data-testid="stSidebar"] [style*="color: #666"],
+            .stSidebar [style*="color: gray"], .stSidebar [style*="color: grey"], .stSidebar [style*="color: #666"] {{
+                color: #000000 !important;
+            }}
+            
+            /* Force all text in sidebar containers */
+            .css-1d391kg, [data-testid="stSidebar"], .stSidebar {{
+                color: #000000 !important;
+            }}
+            
+            .css-1d391kg *, [data-testid="stSidebar"] *, .stSidebar * {{
+                color: #000000 !important;
+            }}
+            
+            /* Additional Streamlit sidebar specific selectors */
+            .css-1d391kg .stMarkdown, .css-1d391kg .stText, .css-1d391kg .stSubheader, .css-1d391kg .stHeader,
+            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stText, [data-testid="stSidebar"] .stSubheader, [data-testid="stSidebar"] .stHeader,
+            .stSidebar .stMarkdown, .stSidebar .stText, .stSidebar .stSubheader, .stSidebar .stHeader {{
+                color: #000000 !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Force all text in sidebar to be black with maximum specificity */
+            .css-1d391kg, .css-1d391kg *, .css-1d391kg label, .css-1d391kg p, .css-1d391kg span, .css-1d391kg div,
+            [data-testid="stSidebar"], [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] div,
+            .stSidebar, .stSidebar *, .stSidebar label, .stSidebar p, .stSidebar span, .stSidebar div,
+            .css-1lcbmhc, .css-1lcbmhc *, .css-1lcbmhc label, .css-1lcbmhc p, .css-1lcbmhc span, .css-1lcbmhc div,
+            .css-1d391kg .stMarkdown, .css-1d391kg .stText, .css-1d391kg .stSubheader, .css-1d391kg .stHeader,
+            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stText, [data-testid="stSidebar"] .stSubheader, [data-testid="stSidebar"] .stHeader,
+            .stSidebar .stMarkdown, .stSidebar .stText, .stSidebar .stSubheader, .stSidebar .stHeader {{
+                color: #000000 !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Universal text visibility override - only for sidebar in dark mode */
+            .css-1d391kg, .css-1d391kg *, [data-testid="stSidebar"], [data-testid="stSidebar"] *, .stSidebar, .stSidebar * {{
+                color: #000000 !important;
+            }}
+            
+            /* NUCLEAR OPTION - Force ALL sidebar text to be black in dark mode */
+            .css-1d391kg, .css-1d391kg *, .css-1d391kg label, .css-1d391kg p, .css-1d391kg span, .css-1d391kg div,
+            [data-testid="stSidebar"], [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] div,
+            .stSidebar, .stSidebar *, .stSidebar label, .stSidebar p, .stSidebar span, .stSidebar div,
+            .css-1lcbmhc, .css-1lcbmhc *, .css-1lcbmhc label, .css-1lcbmhc p, .css-1lcbmhc span, .css-1lcbmhc div {{
+                color: #000000 !important;
+                font-weight: 600 !important;
+                opacity: 1 !important;
+            }}
+            
+            /* Override any light theme rules that might be interfering */
+            .css-1d391kg [style*="color: #333333"], .css-1d391kg [style*="color: gray"], .css-1d391kg [style*="color: grey"],
+            [data-testid="stSidebar"] [style*="color: #333333"], [data-testid="stSidebar"] [style*="color: gray"], [data-testid="stSidebar"] [style*="color: grey"],
+            .stSidebar [style*="color: #333333"], .stSidebar [style*="color: gray"], .stSidebar [style*="color: grey"] {{
+                color: #000000 !important;
+            }}
+            
+            /* Clean sidebar text visibility for dark theme - make text white */
+            .css-1d391kg, .css-1d391kg *, .css-1d391kg label, .css-1d391kg p, .css-1d391kg span, .css-1d391kg div,
+            [data-testid="stSidebar"], [data-testid="stSidebar"] *, [data-testid="stSidebar"] label, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] div,
+            .stSidebar, .stSidebar *, .stSidebar label, .stSidebar p, .stSidebar span, .stSidebar div,
+            .css-1lcbmhc, .css-1lcbmhc *, .css-1lcbmhc label, .css-1lcbmhc p, .css-1lcbmhc span, .css-1lcbmhc div {{
                 color: #ffffff !important;
                 font-weight: 600 !important;
             }}
             
-            /* Universal text visibility override */
-            body, html, div, span, p, h1, h2, h3, h4, h5, h6, label, text {{
-                color: #ffffff !important;
+            /* Specific sidebar element overrides - make text white */
+            .css-1d391kg .stSelectbox label,
+            .css-1d391kg .stTextInput label,
+            .css-1d391kg .stCheckbox label,
+            .css-1d391kg .stRadio label,
+            [data-testid="stSidebar"] .stSelectbox label,
+            [data-testid="stSidebar"] .stTextInput label,
+            [data-testid="stSidebar"] .stCheckbox label,
+            [data-testid="stSidebar"] .stRadio label {{
+                color: #000000 !important;
+                font-weight: 600 !important;
             }}
             
-            /* Chart container text */
-            .element-container {{
-                color: #ffffff !important;
+            /* Sidebar section headers - make text black */
+            .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg h4, .css-1d391kg h5, .css-1d391kg h6,
+            [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] h5, [data-testid="stSidebar"] h6 {{
+                color: #000000 !important;
+                font-weight: bold !important;
             }}
             
-            .element-container div {{
-                color: #ffffff !important;
-            }}
-            
-            /* Streamlit specific containers */
-            .block-container {{
-                color: #ffffff !important;
-            }}
-            
-            .block-container div {{
-                color: #ffffff !important;
-            }}
-            
-            /* Force all text to be white in dark theme */
-            * {{
-                color: #ffffff !important;
+            /* Streamlit sidebar specific selectors - make text black */
+            .css-1d391kg .stMarkdown, .css-1d391kg .stText, .css-1d391kg .stSubheader, .css-1d391kg .stHeader,
+            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stText, [data-testid="stSidebar"] .stSubheader, [data-testid="stSidebar"] .stHeader,
+            .stSidebar .stMarkdown, .stSidebar .stText, .stSidebar .stSubheader, .stSidebar .stHeader {{
+                color: #000000 !important;
+                font-weight: 600 !important;
             }}
             
             /* Specific overrides for chart titles and labels */
@@ -2399,851 +2470,6 @@ def main():
             .element-container .js-plotly-plot .plotly .legend text {{
                 fill: #ffffff !important;
                 color: #ffffff !important;
-            }}
-        </style>
-        """, unsafe_allow_html=True)
-    else:
-        # Light Theme (default) with Dynamic Colors
-        st.markdown(f"""
-        <style>
-                    /* Light Theme Styles with Dynamic Colors */
-            /* Header Container */
-            .header-container {{
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                border-bottom: 3px solid {colors['primary']};
-                padding: 1.5rem 0;
-                margin-bottom: 2rem;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            }}
-            
-            .header-content {{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 2rem;
-            }}
-            
-            .main-header {{
-                font-size: 2.8rem;
-                color: {colors['primary']};
-                font-weight: 700;
-                margin: 0;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-            }}
-            
-            .header-controls {{
-                display: flex;
-                gap: 2rem;
-                align-items: center;
-            }}
-            
-            .status-display {{
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 0.5rem;
-            }}
-            
-            .status-label {{
-                font-size: 0.8rem;
-                color: #666666;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }}
-            
-            .status-value {{
-                font-size: 1rem;
-                color: #333333;
-                font-weight: 600;
-                background: #f8f9fa;
-                padding: 0.5rem 1rem;
-                border-radius: 0.5rem;
-                border: 1px solid {colors['secondary']};
-            }}
-            
-            /* Instrument Card Styles */
-            .instrument-card {{
-                transition: all 0.4s ease;
-            }}
-            
-            .instrument-card:hover {{
-                transform: translateY(-8px) scale(1.02);
-                box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
-                border-color: {colors['primary']};
-            }}
-            
-            /* Class List Styles */
-            .class-list {{
-                display: grid;
-                gap: 1rem;
-            }}
-            
-            .class-item {{
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                border: 1px solid #e0e0e0;
-                border-radius: 0.75rem;
-                padding: 1.5rem;
-                transition: all 0.3s ease;
-            }}
-            
-            .class-item:hover {{
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-                border-color: {colors['primary']};
-            }}
-            
-            .class-header {{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1rem;
-            }}
-            
-            .class-name {{
-                font-size: 1.2rem;
-                font-weight: 700;
-                color: #333333;
-            }}
-            
-            .class-status {{
-                padding: 0.25rem 0.75rem;
-                border-radius: 1rem;
-                font-size: 0.8rem;
-                font-weight: 600;
-            }}
-            
-            .status-needed {{
-                background: #ffebee;
-                color: #c62828;
-            }}
-            
-            .status-filled {{
-                background: #e8f5e8;
-                color: #2e7d32;
-            }}
-            
-            .class-details {{
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem;
-                font-size: 0.9rem;
-            }}
-            
-            .detail-item {{
-                display: flex;
-                flex-direction: column;
-                gap: 0.25rem;
-            }}
-            
-            .detail-label {{
-                color: #666666;
-                font-weight: 600;
-                font-size: 0.8rem;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }}
-            
-            .detail-value {{
-                color: #333333;
-                font-weight: 500;
-            }}
-        
-            .metric-card {{
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                color: #000000;
-                padding: 2.5rem;
-                border-radius: 1.5rem;
-                border: 2px solid #e0e0e0;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                margin: 2rem 0;
-                text-align: center;
-                transition: all 0.4s ease;
-                position: relative;
-                overflow: hidden;
-            }}
-        
-        .metric-card::before {{
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, {colors['primary']}, {colors['accent']});
-        }}
-        
-        .metric-card:hover {{
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-            border-color: {colors['primary']};
-        }}
-            
-            .danger {{
-                background-color: #ffebee;
-                border-color: #f44336;
-                color: #c62828;
-            }}
-            
-            .warning {{
-                background-color: #fff3e0;
-                border-color: #ff9800;
-                color: #ef6c00;
-            }}
-            
-            .success {{
-                background-color: #e8f5e8;
-                border-color: #4caf50;
-                color: #2e7d32;
-            }}
-            
-        .info-box {{
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            color: #000000;
-            padding: 2rem;
-            border-radius: 1rem;
-            margin: 2rem 0;
-            border-left: 6px solid {colors['primary']};
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            border: 2px solid #e0e0e0;
-            position: relative;
-            transition: all 0.4s ease;
-            overflow: hidden;
-        }}
-        
-        .info-box::before {{
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 100%;
-            background: linear-gradient(180deg, {colors['primary']}, {colors['accent']});
-        }}
-        
-        .info-box:hover {{
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-            border-color: {colors['primary']};
-        }}
-        
-        .instrument-card {{
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            color: #000000;
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            border: 2px solid #e0e0e0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin: 2rem;
-            text-align: center;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }}
-        
-        .instrument-card::before {{
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, {colors['primary']}, {colors['accent']});
-        }}
-        
-        .instrument-card:hover {{
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-            border-color: {colors['primary']};
-        }}
-        
-        .instrument-card h3 {{
-            margin: 0 0 1rem 0;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333333;
-        }}
-        
-        .instrument-card p {{
-            margin: 0.25rem 0;
-            font-size: 1rem;
-            color: #666666;
-        }}
-            
-            .instrument-card.danger {{
-                background-color: #ffebee;
-                border-color: #f44336;
-                color: #c62828;
-            }}
-            
-            .instrument-card.warning {{
-                background-color: #fff3e0;
-                border-color: #ff9800;
-                color: #ef6c00;
-            }}
-            
-            .instrument-card.success {{
-                background-color: #e8f5e8;
-                border-color: #4caf50;
-                color: #2e7d32;
-            }}
-            
-            .status-icon {{
-                font-size: 2rem;
-                margin-bottom: 0.5rem;
-            }}
-            
-            /* Light theme for Streamlit elements */
-            .stSelectbox > div > div {{
-                background-color: #ffffff !important;
-                color: #000000 !important;
-            }}
-            
-            .stTextInput > div > div > input {{
-                background-color: #ffffff !important;
-                color: #000000 !important;
-                border-color: #e0e0e0 !important;
-            }}
-            
-            /* Light theme for text input labels */
-            .stTextInput label {{
-                color: #000000 !important;
-                font-weight: bold !important;
-                font-size: 1rem !important;
-                margin-bottom: 0.5rem !important;
-                display: block !important;
-            }}
-            
-            .stDataFrame {{
-                background-color: #ffffff !important;
-                color: #000000 !important;
-            }}
-            
-                            /* Light theme for tabs */
-        .stTabs [data-baseweb="tab-list"] {{
-            background-color: #ffffff !important;
-        }}
-        
-        .stTabs [data-baseweb="tab"] {{
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }}
-        
-        .stTabs [aria-selected="true"] {{
-            background-color: #1f77b4 !important;
-            color: #ffffff !important;
-        }}
-        
-        /* Make numbers in tabs and headers red */
-        .stTabs [data-baseweb="tab"] {{
-            color: #000000 !important;
-        }}
-        
-        /* Custom class for red numbers */
-        .red-number {{
-            color: #ff0000 !important;
-            font-weight: bold !important;
-        }}
-        
-
-            
-            /* Light theme for buttons */
-            .stButton > button {{
-                background-color: #1f77b4 !important;
-                color: #ffffff !important;
-                border-color: #1f77b4 !important;
-            }}
-            
-            .stButton > button:hover {{
-                background-color: #1565c0 !important;
-            }}
-            
-                    /* Light theme for sidebar */
-        .css-1d391kg {{
-            background-color: #ffffff !important;
-        }}
-        
-        /* Light theme for app background */
-        .stApp {{
-            background-color: #ffffff !important;
-        }}
-            
-                    /* Light theme for main content */
-        .main .block-container {{
-            background-color: #ffffff !important;
-        }}
-        
-        /* Light theme for text elements */
-        .stMarkdown {{
-            color: #000000 !important;
-        }}
-        
-        /* Light theme for success/error messages */
-        .stAlert {{
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }}
-        
-        /* Faculty card styling for light theme */
-        .faculty-card {{
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-            border: 2px solid #e0e0e0 !important;
-            border-radius: 1rem !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-        }}
-        
-        .faculty-card:hover {{
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
-            border-color: #2196f3 !important;
-        }}
-        
-        /* Light theme for success messages specifically */
-        .stAlert[data-baseweb="notification"] {{
-            background-color: #e8f5e8 !important;
-            color: #2e7d32 !important;
-            border-color: #4caf50 !important;
-        }}
-        
-        /* Light theme for all success messages - more specific */
-        .stAlert, .stAlert * {{
-            color: #2e7d32 !important;
-        }}
-        
-        /* Light theme for success message text specifically */
-        .stAlert div, .stAlert span, .stAlert p {{
-            color: #2e7d32 !important;
-        }}
-        
-        /* Light theme for all text elements */
-        .stText, .stMarkdown, .stSubheader, .stHeader, .stTitle {{
-            color: #000000 !important;
-        }}
-        
-        /* Light theme for all heading elements */
-        h1, h2, h3, h4, h5, h6 {{
-            color: #000000 !important;
-        }}
-        
-        /* Light theme for Streamlit headings */
-        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {{
-            color: #000000 !important;
-        }}
-        
-        /* Light theme for sidebar text */
-        .css-1d391kg .stMarkdown {{
-            color: #000000 !important;
-        }}
-            
-            /* Light theme for critical alert headers */
-            .critical-alert-header {{
-                color: #d32f2f !important;
-                font-weight: bold !important;
-            }}
-            
-            /* Light theme for critical alerts section */
-            .critical-alerts-section {{
-                color: #000000 !important;
-            }}
-            
-            .critical-alerts-section h3 {{
-                color: #d32f2f !important;
-            }}
-            
-            .critical-alerts-section .stMarkdown {{
-                color: #000000 !important;
-            }}
-            
-            /* Light theme for success messages in critical alerts section */
-            .critical-alerts-section .stAlert {{
-                background-color: #e8f5e8 !important;
-                color: #2e7d32 !important;
-                border-color: #4caf50 !important;
-            }}
-            
-            /* Light theme for success message text in critical alerts section - very specific */
-            .critical-alerts-section .stAlert *,
-            .critical-alerts-section .stAlert div,
-            .critical-alerts-section .stAlert span,
-            .critical-alerts-section .stAlert p {{
-                color: #2e7d32 !important;
-                font-weight: bold !important;
-            }}
-            
-            /* Light theme for custom success message */
-            .critical-alerts-section div[style*="background-color: #e8f5e8"] {{
-                background-color: #e8f5e8 !important;
-                color: #2e7d32 !important;
-                border-left-color: #4caf50 !important;
-            }}
-            
-            /* Emergency text visibility fixes */
-            .stMarkdown, .stText, .stSubheader, .stHeader, .stTitle, .stCaption {{
-                color: #000000 !important;
-                font-weight: 500 !important;
-            }}
-            
-            .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {{
-                color: #000000 !important;
-                font-weight: bold !important;
-            }}
-            
-            .stMarkdown p, .stMarkdown span, .stMarkdown div {{
-                color: #000000 !important;
-                font-weight: 500 !important;
-            }}
-            
-            /* Ensure all text elements are visible */
-            p, span, div, h1, h2, h3, h4, h5, h6 {{
-                color: #000000 !important;
-            }}
-            
-            /* Chart Tooltip Styles - Light Theme */
-            .js-plotly-plot .plotly .main-svg text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .hoverlabel {{
-                background-color: #ffffff !important;
-                border: 2px solid #e0e0e0 !important;
-                border-radius: 8px !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-            }}
-            
-            .js-plotly-plot .plotly .hoverlabel .hovertext {{
-                color: #333333 !important;
-                font-family: 'Arial', sans-serif !important;
-                font-size: 12px !important;
-                font-weight: 500 !important;
-                line-height: 1.4 !important;
-            }}
-            
-            .js-plotly-plot .plotly .hoverlabel .hovertext b {{
-                color: #1f77b4 !important;
-                font-weight: 700 !important;
-            }}
-            
-            /* Ensure all chart text is visible in light theme */
-            .js-plotly-plot .plotly .legend text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .legend .traces text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .legend .traces .legendtext {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Chart title and axis labels */
-            .js-plotly-plot .plotly .gtitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .g-gtitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .g-xtitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .g-ytitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .g-xtick text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .g-ytick text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Emergency text visibility fixes for light theme */
-            .stMarkdown, .stText, .stSubheader, .stHeader, .stTitle, .stCaption {{
-                color: #333333 !important;
-                font-weight: 500 !important;
-            }}
-            
-            .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {{
-                color: #333333 !important;
-                font-weight: bold !important;
-            }}
-            
-            .stMarkdown p, .stMarkdown span, .stMarkdown div {{
-                color: #333333 !important;
-            }}
-            
-            /* Additional comprehensive text visibility fixes for light theme */
-            div[data-testid="stMarkdown"] {{
-                color: #333333 !important;
-            }}
-            
-            div[data-testid="stMarkdown"] h1,
-            div[data-testid="stMarkdown"] h2,
-            div[data-testid="stMarkdown"] h3,
-            div[data-testid="stMarkdown"] h4,
-            div[data-testid="stMarkdown"] h5,
-            div[data-testid="stMarkdown"] h6 {{
-                color: #333333 !important;
-                font-weight: bold !important;
-            }}
-            
-            div[data-testid="stMarkdown"] p,
-            div[data-testid="stMarkdown"] span,
-            div[data-testid="stMarkdown"] div {{
-                color: #333333 !important;
-            }}
-            
-            /* Streamlit widget text visibility for light theme */
-            .stSelectbox, .stTextInput, .stNumberInput, .stSlider, .stCheckbox, .stRadio {{
-                color: #333333 !important;
-            }}
-            
-            .stSelectbox label, .stTextInput label, .stNumberInput label, .stSlider label, .stCheckbox label, .stRadio label {{
-                color: #333333 !important;
-                font-weight: 500 !important;
-            }}
-            
-            /* Tab text visibility for light theme */
-            .stTabs [data-baseweb="tab-list"] {{
-                color: #333333 !important;
-            }}
-            
-            .stTabs [data-baseweb="tab"] {{
-                color: #333333 !important;
-            }}
-            
-            .stTabs [data-baseweb="tab"] span {{
-                color: #333333 !important;
-            }}
-            
-            /* Sidebar text visibility for light theme */
-            .css-1d391kg {{
-                color: #333333 !important;
-            }}
-            
-            .css-1d391kg label {{
-                color: #333333 !important;
-            }}
-            
-            /* Enhanced sidebar text visibility for light theme */
-            .css-1d391kg, .css-1d391kg * {{
-                color: #333333 !important;
-            }}
-            
-            /* Specific sidebar element overrides */
-            .css-1d391kg .stSelectbox label,
-            .css-1d391kg .stTextInput label,
-            .css-1d391kg .stCheckbox label,
-            .css-1d391kg .stRadio label {{
-                color: #333333 !important;
-                font-weight: 600 !important;
-            }}
-            
-            /* Sidebar section headers */
-            .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg h4, .css-1d391kg h5, .css-1d391kg h6 {{
-                color: #333333 !important;
-                font-weight: bold !important;
-            }}
-            
-            /* Sidebar text elements */
-            .css-1d391kg p, .css-1d391kg span, .css-1d391kg div {{
-                color: #333333 !important;
-            }}
-            
-            /* Force all sidebar text to be dark */
-            .css-1d391kg, .css-1d391kg *, .css-1d391kg label, .css-1d391kg p, .css-1d391kg span, .css-1d391kg div {{
-                color: #333333 !important;
-            }}
-            
-            /* Additional sidebar selectors for light theme */
-            [data-testid="stSidebar"] {{
-                color: #333333 !important;
-            }}
-            
-            [data-testid="stSidebar"] * {{
-                color: #333333 !important;
-            }}
-            
-            [data-testid="stSidebar"] label {{
-                color: #333333 !important;
-                font-weight: 600 !important;
-            }}
-            
-            [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] h5, [data-testid="stSidebar"] h6 {{
-                color: #333333 !important;
-                font-weight: bold !important;
-            }}
-            
-            /* Target sidebar widgets specifically */
-            [data-testid="stSidebar"] .stSelectbox label,
-            [data-testid="stSidebar"] .stTextInput label,
-            [data-testid="stSidebar"] .stCheckbox label,
-            [data-testid="stSidebar"] .stRadio label {{
-                color: #333333 !important;
-                font-weight: 600 !important;
-            }}
-            
-            /* Universal text visibility override for light theme */
-            body, html, div, span, p, h1, h2, h3, h4, h5, h6, label, text {{
-                color: #333333 !important;
-            }}
-            
-            /* Chart container text for light theme */
-            .element-container {{
-                color: #333333 !important;
-            }}
-            
-            .element-container div {{
-                color: #333333 !important;
-            }}
-            
-            /* Streamlit specific containers for light theme */
-            .block-container {{
-                color: #333333 !important;
-            }}
-            
-            .block-container div {{
-                color: #333333 !important;
-            }}
-            
-            /* Force all text to be dark in light theme */
-            * {{
-                color: #333333 !important;
-            }}
-            
-            /* Specific overrides for chart titles and labels in light theme */
-            .js-plotly-plot .plotly .gtitle text,
-            .js-plotly-plot .plotly .g-gtitle text,
-            .js-plotly-plot .plotly .g-xtitle text,
-            .js-plotly-plot .plotly .g-ytitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-                font-weight: bold !important;
-            }}
-            
-            /* Ensure all plotly text elements are visible in light theme */
-            .js-plotly-plot .plotly .main-svg text,
-            .js-plotly-plot .plotly .legend text,
-            .js-plotly-plot .plotly .g-xtick text,
-            .js-plotly-plot .plotly .g-ytick text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Additional specific rules for chart titles in light theme */
-            .js-plotly-plot .plotly .gtitle, .js-plotly-plot .plotly .g-gtitle {{
-                color: #333333 !important;
-            }}
-            
-            .js-plotly-plot .plotly .gtitle text, .js-plotly-plot .plotly .g-gtitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-                font-weight: bold !important;
-                font-size: 16px !important;
-            }}
-            
-            /* Force all SVG text elements to be visible in light theme */
-            .js-plotly-plot .plotly svg text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Specific override for chart titles */
-            .js-plotly-plot .plotly .gtitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-                font-weight: bold !important;
-                font-size: 16px !important;
-            }}
-            
-            /* Override for any white text in charts */
-            .js-plotly-plot .plotly text[fill="white"], .js-plotly-plot .plotly text[fill="#ffffff"] {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Force all text in plotly containers to be dark */
-            .element-container .js-plotly-plot .plotly text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Additional override for chart titles with higher specificity */
-            .element-container .js-plotly-plot .plotly .gtitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-                font-weight: bold !important;
-                font-size: 16px !important;
-            }}
-            
-            /* Force all chart axis labels to be visible in light theme */
-            .js-plotly-plot .plotly .g-xtitle text, .js-plotly-plot .plotly .g-ytitle text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-                font-weight: bold !important;
-                font-size: 14px !important;
-            }}
-            
-            /* Force all chart tick labels to be visible */
-            .js-plotly-plot .plotly .g-xtick text, .js-plotly-plot .plotly .g-ytick text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-                font-size: 12px !important;
-            }}
-            
-            /* Force legend text to be visible */
-            .js-plotly-plot .plotly .legend text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-                font-size: 12px !important;
-            }}
-            
-            /* Force all text in plotly charts to be dark */
-            .js-plotly-plot .plotly text {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Specific override for any white or light colored text */
-            .js-plotly-plot .plotly text[fill="white"], 
-            .js-plotly-plot .plotly text[fill="#ffffff"],
-            .js-plotly-plot .plotly text[fill="lightgray"],
-            .js-plotly-plot .plotly text[fill="#d3d3d3"] {{
-                fill: #333333 !important;
-                color: #333333 !important;
-            }}
-            
-            /* Force all text in chart containers to be dark */
-            .element-container .js-plotly-plot .plotly text,
-            .element-container .js-plotly-plot .plotly .gtitle text,
-            .element-container .js-plotly-plot .plotly .g-xtitle text,
-            .element-container .js-plotly-plot .plotly .g-ytitle text,
-            .element-container .js-plotly-plot .plotly .g-xtick text,
-            .element-container .js-plotly-plot .plotly .g-ytick text,
-            .element-container .js-plotly-plot .plotly .legend text {{
-                fill: #333333 !important;
-                color: #333333 !important;
             }}
         </style>
         """, unsafe_allow_html=True)
