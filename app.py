@@ -6,6 +6,10 @@ from plotly.subplots import make_subplots
 import json
 import numpy as np
 from datetime import datetime
+import os
+import base64
+from PIL import Image
+import io
 
 # Page configuration
 st.set_page_config(
@@ -73,6 +77,248 @@ def get_status_color(status):
     else:
         return '#ff9800'  # Orange
 
+def identify_performance_classes(df):
+    """Identify performance classes where faculty cannot be scheduled for rating auditions"""
+    performance_classes = []
+    
+    for _, ensemble in df.iterrows():
+        section_name = ensemble['secInstrumentation_sectionname']
+        course_title = ensemble['secInstrumentation_titlelongcrs'][0] if isinstance(ensemble['secInstrumentation_titlelongcrs'], list) and len(ensemble['secInstrumentation_titlelongcrs']) > 0 else 'N/A'
+        faculty = ', '.join(ensemble['secInstrumentation_facnamepreffml']) if isinstance(ensemble['secInstrumentation_facnamepreffml'], list) else 'N/A'
+        
+        # Check if this is a performance class (ENMX-100 or specific patterns)
+        is_performance_class = False
+        performance_reason = ""
+        
+        # Check for ENMX-100 classes
+        if 'ENMX-100' in section_name:
+            is_performance_class = True
+            performance_reason = "ENMX-100 Performance Class"
+        
+        # Check for specific faculty patterns (you can add more faculty names here)
+        elif any(faculty_name in faculty for faculty_name in ['PISJ', 'ENDS']):
+            is_performance_class = True
+            performance_reason = f"Faculty {faculty} - Cannot be scheduled for rating auditions"
+        
+        # Check for other performance class patterns
+        elif any(keyword in course_title.upper() for keyword in ['PERFORMANCE', 'ENSEMBLE', 'RECITAL']):
+            is_performance_class = True
+            performance_reason = "Performance/Ensemble Class"
+        
+        if is_performance_class:
+            days = ', '.join(ensemble['bSinCsmDays']) if isinstance(ensemble['bSinCsmDays'], list) else 'N/A'
+            time = f"{ensemble['bSinCsmStartTime'][0] if isinstance(ensemble['bSinCsmStartTime'], list) else 'N/A'} - {ensemble['bSinCsmEndTime'][0] if isinstance(ensemble['bSinCsmEndTime'], list) else 'N/A'}"
+            enrolled_count = ensemble['secInstrumentation_activestucount']
+            total_capacity = ensemble['secInstrumentation_seatscap']
+            enrollment_rate = ensemble['enrollment_rate']
+            style = ensemble['style']
+            rating = ensemble['ratingOverall']
+            
+            performance_classes.append({
+                'section_name': section_name,
+                'course_title': course_title,
+                'faculty': faculty,
+                'days': days,
+                'time': time,
+                'enrolled_count': enrolled_count,
+                'total_capacity': total_capacity,
+                'enrollment_rate': enrollment_rate,
+                'style': style,
+                'rating': rating,
+                'performance_reason': performance_reason
+            })
+    
+    return performance_classes
+
+def categorize_faculty_contract(faculty_name):
+    """Categorize faculty by contract type based on name patterns or manual mapping"""
+    # This is a placeholder function - in a real implementation, this would come from a database
+    # or be manually configured by staff
+    
+    # Example mappings - these would be configurable
+    faculty_contract_mapping = {
+        # Full Time Faculty
+        'Lello Molinari': 'FT',
+        'Eric Doob': 'FT',
+        'Sharik Hasan': 'FT',
+        'Robert Schlink': 'FT',
+        'Consuelo Candelaria-Barry': 'FT',
+
+        # Part Time 3-Year Contract
+        'Albino Mbie': 'PT3yr',
+        'Mark Copeland': 'PT3yr',
+        
+        # Part Time Special Circumstances
+        'Ricardo Monzon': 'PT_special',
+        'Alexandria Dewalt': 'PT_special',
+        'Robert Pate': 'PT_special',
+        'Anastassiya Petrova': 'PT_special',
+        
+        # Adjunct Faculty
+        'Tolieth Marks': 'adjunct',
+        'Elan Trotman': 'adjunct',
+    }
+    
+    return faculty_contract_mapping.get(faculty_name, 'Unknown')
+
+def get_contract_color(contract_type):
+    """Get color for contract type"""
+    color_mapping = {
+        'FT': '#ff0000',  # Red
+        'PT3yr': '#0000ff',  # Blue
+        'PT_special': '#ffa500',  # Orange
+        'adjunct': '#8b4513',  # Brown
+        'Unknown': '#808080'  # Gray
+    }
+    return color_mapping.get(contract_type, '#808080')
+
+def get_registration_priority_score(enrolled_count, contract_type):
+    """Calculate registration priority score based on student count and faculty contract"""
+    # Priority order: 3 students > 2 students > 1 student > 0 students
+    # Within each student count, prioritize by contract type: FT > PT3yr > PT_special > adjunct
+    
+    contract_priority = {
+        'FT': 4,
+        'PT3yr': 3,
+        'PT_special': 2,
+        'adjunct': 1,
+        'Unknown': 0
+    }
+    
+    # Base score from student count (higher is better)
+    student_score = enrolled_count * 10
+    
+    # Contract priority score
+    contract_score = contract_priority.get(contract_type, 0)
+    
+    # Total score (student count is primary, contract type is secondary)
+    return student_score + contract_score
+
+def analyze_registration_preferences(df):
+    """Analyze classes for registration preferences based on student count and faculty contract"""
+    registration_data = []
+    
+    for _, ensemble in df.iterrows():
+        faculty_names = ensemble['secInstrumentation_facnamepreffml']
+        if isinstance(faculty_names, list) and faculty_names:
+            faculty_name = faculty_names[0]  # Take first faculty member
+            contract_type = categorize_faculty_contract(faculty_name)
+            enrolled_count = ensemble['secInstrumentation_activestucount']
+            priority_score = get_registration_priority_score(enrolled_count, contract_type)
+            
+            # Determine priority level
+            if enrolled_count == 3:
+                priority_level = "HIGHEST - 3 instruments/ratings"
+            elif enrolled_count == 2:
+                priority_level = "HIGH - 2 instruments/ratings"
+            elif enrolled_count == 1:
+                priority_level = "MEDIUM - 1 instrument/rating"
+            else:
+                priority_level = "LOW - 0 instruments/ratings"
+            
+            registration_data.append({
+                'section_name': ensemble['secInstrumentation_sectionname'],
+                'course_title': ensemble['secInstrumentation_titlelongcrs'][0] if isinstance(ensemble['secInstrumentation_titlelongcrs'], list) and len(ensemble['secInstrumentation_titlelongcrs']) > 0 else 'N/A',
+                'faculty': faculty_name,
+                'contract_type': contract_type,
+                'enrolled_count': enrolled_count,
+                'total_capacity': ensemble['secInstrumentation_seatscap'],
+                'enrollment_rate': ensemble['enrollment_rate'],
+                'priority_score': priority_score,
+                'priority_level': priority_level,
+                'days': ', '.join(ensemble['bSinCsmDays']) if isinstance(ensemble['bSinCsmDays'], list) else 'N/A',
+                'time': f"{ensemble['bSinCsmStartTime'][0] if isinstance(ensemble['bSinCsmStartTime'], list) else 'N/A'} - {ensemble['bSinCsmEndTime'][0] if isinstance(ensemble['bSinCsmEndTime'], list) else 'N/A'}",
+                'style': ensemble['style'],
+                'rating': ensemble['ratingOverall'],
+                'instruments_needed': ', '.join(ensemble['rhythmneeded']) if isinstance(ensemble['rhythmneeded'], list) else 'None'
+            })
+    
+    # Sort by priority score (highest first)
+    registration_data.sort(key=lambda x: x['priority_score'], reverse=True)
+    return registration_data
+
+def get_faculty_image_path(faculty_name):
+    """Get the path to faculty image/document if it exists"""
+    # Create a safe filename from faculty name
+    safe_name = "".join(c for c in faculty_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+    safe_name = safe_name.replace(' ', '_')
+    
+    # Check for different file extensions
+    extensions = ['.jpg', '.jpeg', '.png', '.pdf']
+    for ext in extensions:
+        file_path = f"faculty_images/{safe_name}{ext}"
+        if os.path.exists(file_path):
+            return file_path, ext.lstrip('.')
+    
+    return None, None
+
+def save_faculty_image(faculty_name, uploaded_file):
+    """Save uploaded faculty image/document"""
+    try:
+        # Create faculty_images directory if it doesn't exist
+        os.makedirs("faculty_images", exist_ok=True)
+        
+        # Create a safe filename from faculty name
+        safe_name = "".join(c for c in faculty_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+        safe_name = safe_name.replace(' ', '_')
+        
+        # Get file extension from uploaded file
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        
+        # Validate file extension
+        allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf']
+        if file_extension not in allowed_extensions:
+            st.error(f"❌ Unsupported file type. Please upload: {', '.join(allowed_extensions).upper()}")
+            return False
+        
+        # Save the uploaded file with original extension
+        file_path = f"faculty_images/{safe_name}.{file_extension}"
+        
+        # Save the uploaded file
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        
+        return True
+    except Exception as e:
+        st.error(f"Error saving file: {str(e)}")
+        return False
+
+def display_faculty_image(faculty_name, width=100, height=100):
+    """Display faculty image/document with fallback to placeholder"""
+    image_path, file_type = get_faculty_image_path(faculty_name)
+    
+    if image_path and file_type in ['jpg', 'jpeg', 'png']:
+        try:
+            image = Image.open(image_path)
+            # Resize image to fit the card
+            image = image.resize((width, height), Image.Resampling.LANCZOS)
+            
+            # Convert to base64 for display
+            buffered = io.BytesIO()
+            image.save(buffered, format="JPEG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            
+            return f"data:image/jpeg;base64,{img_str}"
+        except Exception as e:
+            st.error(f"Error loading image for {faculty_name}: {str(e)}")
+    
+    # Return placeholder image (you can replace this with a default image)
+    return None
+
+def get_faculty_file_info(faculty_name):
+    """Get faculty file information for display"""
+    image_path, file_type = get_faculty_image_path(faculty_name)
+    
+    if image_path:
+        return {
+            'path': image_path,
+            'type': file_type,
+            'name': os.path.basename(image_path),
+            'size': os.path.getsize(image_path) if os.path.exists(image_path) else 0
+        }
+    
+    return None
+
 def main():
     # Load data first
     df = load_data()
@@ -99,6 +345,20 @@ def main():
     # Instrument filter
     instruments = ['All', 'GUIT', 'PNO', 'BASS', 'DRUMS', 'VOICE']
     selected_instrument = st.sidebar.selectbox("Filter by Instrument Need", instruments, key="instrument_filter")
+    
+    # Sorting options
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("📊 Sort Options")
+    
+    sort_options = [
+        "Default (No Sorting)",
+        "Priority Order: 3 Students > 2 > 1 > 0 (FT > PT3yr > PT_special > adjunct)",
+        "Enrollment Count (High to Low)",
+        "Enrollment Count (Low to High)",
+        "Class Name (A-Z)",
+        "Faculty Name (A-Z)"
+    ]
+    selected_sort = st.sidebar.selectbox("Sort Classes By", sort_options, key="sort_filter")
     
     # Specific instrument needs filters
     st.sidebar.markdown("---")
@@ -138,24 +398,126 @@ def main():
         filtered_df = filtered_df[filtered_df['VOICE_needed'] > 0]
         st.sidebar.success(f"🎤 Showing {len(filtered_df)} classes that need Vocal players")
     
-    # Small theme selector at the top
-    col1, col2, col3 = st.columns([1, 3, 1])
+    # Apply sorting based on user selection
+    if selected_sort != "Default (No Sorting)":
+        if selected_sort == "Priority Order: 3 Students > 2 > 1 > 0 (FT > PT3yr > PT_special > adjunct)":
+            # Calculate priority scores for sorting
+            def calculate_priority_score(row):
+                enrolled_count = row['secInstrumentation_activestucount']
+                # Get the first faculty name for contract type determination
+                faculty_names = row['secInstrumentation_facnamepreffml']
+                if isinstance(faculty_names, list) and faculty_names:
+                    contract_type = categorize_faculty_contract(faculty_names[0])
+                else:
+                    contract_type = "Unknown"
+                
+                # Priority: 3 students > 2 > 1 > 0
+                # Within each student count: FT > PT3yr > PT_special > adjunct
+                contract_priority = {"FT": 4, "PT3yr": 3, "PT_special": 2, "adjunct": 1, "Unknown": 0}
+                
+                # Create a composite score: (student_count * 10) + contract_priority
+                # This ensures 3 students always rank higher than 2 students, etc.
+                return (enrolled_count * 10) + contract_priority.get(contract_type, 0)
+            
+            # Add priority score column and sort
+            filtered_df = filtered_df.copy()
+            filtered_df['priority_score'] = filtered_df.apply(calculate_priority_score, axis=1)
+            filtered_df = filtered_df.sort_values('priority_score', ascending=False)
+            filtered_df = filtered_df.drop('priority_score', axis=1)
+            
+        elif selected_sort == "Enrollment Count (High to Low)":
+            filtered_df = filtered_df.sort_values('secInstrumentation_activestucount', ascending=False)
+        elif selected_sort == "Enrollment Count (Low to High)":
+            filtered_df = filtered_df.sort_values('secInstrumentation_activestucount', ascending=True)
+        elif selected_sort == "Class Name (A-Z)":
+            filtered_df = filtered_df.sort_values('secInstrumentation_sectionname', ascending=True)
+        elif selected_sort == "Faculty Name (A-Z)":
+            # Sort by the first faculty name in the list
+            def get_first_faculty(row):
+                faculty_names = row['secInstrumentation_facnamepreffml']
+                if isinstance(faculty_names, list) and faculty_names:
+                    return faculty_names[0]
+                return ""
+            
+            filtered_df = filtered_df.copy()
+            filtered_df['first_faculty'] = filtered_df.apply(get_first_faculty, axis=1)
+            filtered_df = filtered_df.sort_values('first_faculty', ascending=True)
+            filtered_df = filtered_df.drop('first_faculty', axis=1)
+    
+    # Enhanced theme selector at the top
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
     with col1:
+        # Theme Mode Selector with Icons
         theme_mode = st.selectbox(
-            "Theme",
+            "🌙 Theme Mode",
             ["Light", "Dark"],
             key="theme_selector"
         )
     with col2:
-        st.markdown("")
+        # Theme Color Selector
+        theme_colors = {
+            "Classic Blue": {"primary": "#4a9eff", "secondary": "#63b3ed", "accent": "#3182ce"},
+            "Ocean Green": {"primary": "#38b2ac", "secondary": "#4fd1c7", "accent": "#319795"},
+            "Sunset Orange": {"primary": "#ed8936", "secondary": "#f6ad55", "accent": "#dd6b20"},
+            "Royal Purple": {"primary": "#9f7aea", "secondary": "#b794f4", "accent": "#805ad5"},
+            "Coral Pink": {"primary": "#f687b3", "secondary": "#fbb6ce", "accent": "#e53e3e"},
+            "Emerald": {"primary": "#48bb78", "secondary": "#68d391", "accent": "#38a169"}
+        }
+        
+        selected_color_theme = st.selectbox(
+            "🎨 Color Theme",
+            list(theme_colors.keys()),
+            key="color_theme_selector"
+        )
+        
+        # Store selected colors in session state
+        st.session_state['theme_colors'] = theme_colors[selected_color_theme]
     with col3:
-        st.markdown("")
+        # Faculty Contract Management Button
+        if st.button("⚙️ Faculty Contract Management", key="faculty_contract_btn"):
+            st.session_state['show_faculty_management'] = not st.session_state.get('show_faculty_management', False)
+    with col4:
+        # Theme Preview
+        colors = st.session_state.get('theme_colors', theme_colors["Classic Blue"])
+        st.markdown(f"""
+        <div style="
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+            padding: 8px; 
+            background: {'#2d3748' if theme_mode == 'Dark' else '#f7fafc'}; 
+            border-radius: 8px;
+            border: 1px solid {'#4a5568' if theme_mode == 'Dark' else '#e2e8f0'};
+        ">
+            <div style="
+                width: 20px; 
+                height: 20px; 
+                background: {colors['primary']}; 
+                border-radius: 50%;
+                border: 2px solid {'#ffffff' if theme_mode == 'Dark' else '#000000'};
+            "></div>
+            <div style="
+                width: 20px; 
+                height: 20px; 
+                background: {colors['secondary']}; 
+                border-radius: 50%;
+                border: 2px solid {'#ffffff' if theme_mode == 'Dark' else '#000000'};
+            "></div>
+            <div style="
+                width: 20px; 
+                height: 20px; 
+                background: {colors['accent']}; 
+                border-radius: 50%;
+                border: 2px solid {'#ffffff' if theme_mode == 'Dark' else '#000000'};
+            "></div>
+        </div>
+        """, unsafe_allow_html=True)
     
     # Header with title
     st.markdown("""
     <div class="header-container">
         <div class="header-content">
-            <h1 class="main-header">ENS Dashboard Hub</h1>
+            <h2 class="main-header">ENS Dashboard Hub</h2>
             <div class="status-display">
                 <span class="status-label">Status</span>
                 <span class="status-value">Active: """ + str(len(filtered_df)) + """ classes</span>
@@ -164,24 +526,436 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Apply CSS based on selected theme
+    # Faculty Contract Management Section
+    if st.session_state.get('show_faculty_management', False):
+        st.markdown("---")
+        st.subheader("⚙️ Faculty Contract Management")
+        
+        # Get unique faculty names from the data
+        all_faculty = set()
+        for _, ensemble in filtered_df.iterrows():
+            faculty_names = ensemble['secInstrumentation_facnamepreffml']
+            if isinstance(faculty_names, list):
+                all_faculty.update(faculty_names)
+        
+        faculty_list = sorted(list(all_faculty))
+        
+        if faculty_list:
+            st.markdown("### 📝 Update Faculty Contract Types")
+            st.markdown("Configure faculty contract types to improve registration preference calculations.")
+            
+            # Create a simple interface for updating faculty contracts
+            selected_faculty = st.selectbox(
+                "Select Faculty Member:",
+                faculty_list,
+                key="faculty_selector"
+            )
+            
+            contract_type = st.selectbox(
+                "Contract Type:",
+                ["FT", "PT3yr", "PT_special", "adjunct", "Unknown"],
+                key="contract_type_selector"
+            )
+            
+            # Faculty Image Upload Section
+            st.markdown("### 📸 Faculty Image Management")
+            st.markdown("Upload profile images for faculty members to enhance the directory display.")
+            
+            # Image upload for selected faculty
+            uploaded_image = st.file_uploader(
+                f"Upload image for {selected_faculty}:",
+                type=['jpg', 'jpeg', 'png'],
+                key="faculty_image_upload"
+            )
+            
+            if uploaded_image is not None:
+                # Display preview
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    st.image(uploaded_image, caption=f"Preview for {selected_faculty}", width=150)
+                
+                with col2:
+                    if st.button("Save Image", key="save_image_btn"):
+                        if save_faculty_image(selected_faculty, uploaded_image):
+                            st.success(f"✅ Image saved successfully for {selected_faculty}!")
+                        else:
+                            st.error("❌ Failed to save image. Please try again.")
+            
+            # Contract management buttons
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Update Contract Type", key="update_contract_btn"):
+                    # In a real implementation, this would save to a database or configuration file
+                    st.success(f"Updated {selected_faculty} to {contract_type} contract type!")
+                    st.info("Note: In a production system, this would be saved to a database.")
+            
+            with col2:
+                if st.button("Reset All to Unknown", key="reset_contracts_btn"):
+                    st.warning("Reset all faculty contract types to 'Unknown'!")
+                    st.info("Note: In a production system, this would update the database.")
+            
+            # Display current faculty contract mappings
+            st.markdown("### 📋 Current Faculty Contract Mappings")
+            st.markdown("**Color Legend:**")
+            st.markdown("""
+            - <span style="color: #ff0000; font-weight: bold;">🔴 Red</span> = Full Time (FT)
+            - <span style="color: #0000ff; font-weight: bold;">🔵 Blue</span> = Part Time 3-Year Contract (PT3yr)
+            - <span style="color: #ffa500; font-weight: bold;">🟠 Orange</span> = Part Time Special Circumstances (PT_special)
+            - <span style="color: #8b4513; font-weight: bold;">🟤 Brown</span> = Adjunct
+            - <span style="color: #808080; font-weight: bold;">⚫ Gray</span> = Unknown
+            """, unsafe_allow_html=True)
+            
+            # Display faculty list with their contract types in card view
+            faculty_contract_display = []
+            for faculty in faculty_list:
+                contract_type = categorize_faculty_contract(faculty)
+                color = get_contract_color(contract_type)
+                faculty_contract_display.append({
+                    'Faculty': faculty,
+                    'Contract Type': contract_type,
+                    'Color': color
+                })
+            
+            # Search and Filter Section
+            st.markdown("### 🔍 Search & Filter Faculty")
+            
+            # Search by faculty name
+            search_term = st.text_input(
+                "Search by faculty name:",
+                placeholder="Enter faculty name...",
+                key="faculty_search"
+            )
+            
+            # Filter by contract type
+            contract_filter = st.selectbox(
+                "Filter by contract type:",
+                ["All", "FT", "PT3yr", "PT_special", "adjunct", "Unknown"],
+                key="contract_filter"
+            )
+            
+            # Apply filters
+            filtered_faculty = faculty_contract_display.copy()
+            
+            # Apply search filter
+            if search_term:
+                filtered_faculty = [f for f in filtered_faculty if search_term.lower() in f['Faculty'].lower()]
+            
+            # Apply contract type filter
+            if contract_filter != "All":
+                filtered_faculty = [f for f in filtered_faculty if f['Contract Type'] == contract_filter]
+            
+            # Display filtered results
+            if filtered_faculty:
+                st.markdown(f"### 👥 Faculty Directory ({len(filtered_faculty)} found)")
+                
+                # Show filter summary
+                if search_term or contract_filter != "All":
+                    filter_summary = []
+                    if search_term:
+                        filter_summary.append(f"Name: '{search_term}'")
+                    if contract_filter != "All":
+                        filter_summary.append(f"Contract: {contract_filter}")
+                    
+                    st.info(f"🔍 Showing results for: {' & '.join(filter_summary)}")
+                
+                # Create columns for responsive card layout
+                cols = st.columns(3)
+                for idx, faculty_info in enumerate(filtered_faculty):
+                    col_idx = idx % 3
+                    with cols[col_idx]:
+                        # Check if faculty has an image or file
+                        faculty_image = display_faculty_image(faculty_info['Faculty'], width=80, height=80)
+                        faculty_file_info = get_faculty_file_info(faculty_info['Faculty'])
+                        
+                        # Create a unique key for this faculty's edit section
+                        edit_key = f"edit_{faculty_info['Faculty'].replace(' ', '_').replace('-', '_')}"
+                        
+                        # Determine what to display in the card
+                        has_image = faculty_image is not None
+                        has_file = faculty_file_info is not None
+                        
+                        if has_image:
+                            # Display card with image
+                            st.markdown(f"""
+                            <div class="faculty-card" style="
+                                padding: 1.5rem;
+                                margin: 0.5rem 0;
+                                text-align: center;
+                                min-height: 200px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                            ">
+                                <div style="
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    justify-content: center;
+                                ">
+                                    <img src="{faculty_image}" 
+                                         style="
+                                             width: 80px; 
+                                             height: 80px; 
+                                             border-radius: 50%; 
+                                             object-fit: cover;
+                                             border: 3px solid {faculty_info['Color']};
+                                         "
+                                         alt="{faculty_info['Faculty']}">
+                                </div>
+                                <div style="
+                                    background-color: {faculty_info['Color']}; 
+                                    color: white; 
+                                    padding: 0.5rem 1rem; 
+                                    border-radius: 0.5rem; 
+                                    font-size: 0.9rem; 
+                                    font-weight: bold; 
+                                    margin-bottom: 1rem;
+                                    display: inline-block;
+                                    width: fit-content;
+                                    margin-left: auto;
+                                    margin-right: auto;
+                                ">
+                                    {faculty_info['Contract Type']}
+                                </div>
+                                <div style="
+                                    font-size: 1.1rem; 
+                                    font-weight: bold; 
+                                    color: #333;
+                                    margin-top: 0.5rem;
+                                    line-height: 1.3;
+                                    margin-bottom: 1rem;
+                                ">
+                                    {faculty_info['Faculty']}
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        elif has_file:
+                            # Display card with file icon
+                            file_icon = "📄" if faculty_file_info['type'] == 'pdf' else "🖼️"
+                            st.markdown(f"""
+                            <div class="faculty-card" style="
+                                padding: 1.5rem;
+                                margin: 0.5rem 0;
+                                text-align: center;
+                                min-height: 200px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                            ">
+                                <div style="
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    justify-content: center;
+                                ">
+                                    <div style="
+                                        width: 80px; 
+                                        height: 80px; 
+                                        border-radius: 50%; 
+                                        background-color: #f0f0f0;
+                                        border: 3px solid {faculty_info['Color']};
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 2rem;
+                                        color: #666;
+                                    ">
+                                        {file_icon}
+                                    </div>
+                                </div>
+                                <div style="
+                                    background-color: {faculty_info['Color']}; 
+                                    color: white; 
+                                    padding: 0.5rem 1rem; 
+                                    border-radius: 0.5rem; 
+                                    font-size: 0.9rem; 
+                                    font-weight: bold; 
+                                    margin-bottom: 1rem;
+                                    display: inline-block;
+                                    width: fit-content;
+                                    margin-left: auto;
+                                    margin-right: auto;
+                                ">
+                                    {faculty_info['Contract Type']}
+                                </div>
+                                <div style="
+                                    font-size: 1.1rem; 
+                                    font-weight: bold; 
+                                    color: #333;
+                                    margin-top: 0.5rem;
+                                    line-height: 1.3;
+                                    margin-bottom: 0.5rem;
+                                ">
+                                    {faculty_info['Faculty']}
+                                </div>
+                                <div style="
+                                    font-size: 0.8rem; 
+                                    color: #666;
+                                    margin-bottom: 1rem;
+                                ">
+                                    📎 {faculty_file_info['type'].upper()} file
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        else:
+                            # Display card without image (placeholder)
+                            st.markdown(f"""
+                            <div class="faculty-card" style="
+                                padding: 1.5rem;
+                                margin: 0.5rem 0;
+                                text-align: center;
+                                min-height: 200px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                            ">
+                                <div style="
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    justify-content: center;
+                                ">
+                                    <div style="
+                                        width: 80px; 
+                                        height: 80px; 
+                                        border-radius: 50%; 
+                                        background-color: #f0f0f0;
+                                        border: 3px solid {faculty_info['Color']};
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 2rem;
+                                        color: #999;
+                                    ">
+                                        👤
+                                    </div>
+                                </div>
+                                <div style="
+                                    background-color: {faculty_info['Color']}; 
+                                    color: white; 
+                                    padding: 0.5rem 1rem; 
+                                    border-radius: 0.5rem; 
+                                    font-size: 0.9rem; 
+                                    font-weight: bold; 
+                                    margin-bottom: 1rem;
+                                    display: inline-block;
+                                    width: fit-content;
+                                    margin-left: auto;
+                                    margin-right: auto;
+                                ">
+                                    {faculty_info['Contract Type']}
+                                </div>
+                                <div style="
+                                    font-size: 1.1rem; 
+                                    font-weight: bold; 
+                                    color: #333;
+                                    margin-top: 0.5rem;
+                                    line-height: 1.3;
+                                    margin-bottom: 1rem;
+                                ">
+                                    {faculty_info['Faculty']}
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        
+                        # Add Edit button below each card
+                        if st.button(f"✏️ Edit {faculty_info['Faculty']}", key=f"edit_btn_{edit_key}"):
+                            st.session_state[f'edit_faculty_{edit_key}'] = not st.session_state.get(f'edit_faculty_{edit_key}', False)
+                        
+                        # Show edit section if button was clicked
+                        if st.session_state.get(f'edit_faculty_{edit_key}', False):
+                            st.markdown("---")
+                            st.markdown(f"### 📸 Edit Profile for {faculty_info['Faculty']}")
+                            
+                            # Show current file information if exists
+                            if faculty_file_info:
+                                st.info(f"📎 **Current file:** {faculty_file_info['name']} ({faculty_file_info['type'].upper()}, {faculty_file_info['size']} bytes)")
+                            
+                            # File upload for this specific faculty
+                            uploaded_file = st.file_uploader(
+                                f"Upload new file for {faculty_info['Faculty']}:",
+                                type=['jpg', 'jpeg', 'png', 'pdf'],
+                                key=f"faculty_file_upload_{edit_key}",
+                                help="Supported formats: JPG, JPEG, PNG, PDF"
+                            )
+                            
+                            if uploaded_file is not None:
+                                # Display file information
+                                file_size = len(uploaded_file.getbuffer())
+                                file_type = uploaded_file.name.split('.')[-1].lower()
+                                
+                                col1, col2 = st.columns([1, 2])
+                                with col1:
+                                    if file_type in ['jpg', 'jpeg', 'png']:
+                                        st.image(uploaded_file, caption=f"Preview for {faculty_info['Faculty']}", width=150)
+                                    else:
+                                        st.markdown(f"""
+                                        <div style="
+                                            width: 150px; 
+                                            height: 150px; 
+                                            background-color: #f0f0f0;
+                                            border: 2px dashed #ccc;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            margin: 0 auto;
+                                        ">
+                                            <div style="text-align: center;">
+                                                <div style="font-size: 3rem;">📄</div>
+                                                <div style="font-size: 0.8rem; color: #666;">PDF Preview</div>
+                                            </div>
+                                        </div>
+                                        """, unsafe_allow_html=True)
+                                
+                                with col2:
+                                    st.markdown(f"**File Details:**")
+                                    st.markdown(f"- **Name:** {uploaded_file.name}")
+                                    st.markdown(f"- **Type:** {file_type.upper()}")
+                                    st.markdown(f"- **Size:** {file_size:,} bytes")
+                                    
+                                    if st.button("Save File", key=f"save_file_btn_{edit_key}"):
+                                        if save_faculty_image(faculty_info['Faculty'], uploaded_file):
+                                            st.success(f"✅ File saved successfully for {faculty_info['Faculty']}!")
+                                            # Reset the edit state to close the edit section
+                                            st.session_state[f'edit_faculty_{edit_key}'] = False
+                                            st.rerun()
+                                        else:
+                                            st.error("❌ Failed to save file. Please try again.")
+                            
+                            # Close edit section button
+                            if st.button("Close", key=f"close_edit_{edit_key}"):
+                                st.session_state[f'edit_faculty_{edit_key}'] = False
+                                st.rerun()
+                            
+                            st.markdown("---")
+            else:
+                st.warning("🔍 No faculty found matching your search criteria.")
+                st.markdown("**Try:**")
+                st.markdown("- Clearing the search field")
+                st.markdown("- Selecting 'All' in the contract filter")
+                st.markdown("- Using different search terms")
+        else:
+            st.info("No faculty data available for management.")
+        
+        st.markdown("---")
+    
+    # Apply CSS based on selected theme and colors
+    colors = st.session_state.get('theme_colors', {"primary": "#4a9eff", "secondary": "#63b3ed", "accent": "#3182ce"})
+    
     if theme_mode == "Dark":
-        st.markdown("""
+        st.markdown(f"""
         <style>
-            /* Dark Theme Styles */
-            .stApp {
+            /* Dark Theme Styles with Dynamic Colors */
+            .stApp {{
                 background-color: #1a1a1a;
                 color: #ffffff;
-            }
+            }}
             
             /* Header Container */
-            .header-container {
+            .header-container {{
                 background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-                border-bottom: 3px solid #4a9eff;
+                border-bottom: 3px solid {colors['primary']};
                 padding: 1.5rem 0;
                 margin-bottom: 2rem;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            }
+            }}
             
             .header-content {
                 display: flex;
@@ -192,60 +966,56 @@ def main():
                 padding: 0 2rem;
             }
             
-            .main-header {
+            .main-header {{
                 font-size: 2.8rem;
-                color: #ffffff;
+                color: {colors['primary']};
                 font-weight: 700;
                 margin: 0;
                 text-transform: uppercase;
                 letter-spacing: 2px;
-                background: linear-gradient(45deg, #4a9eff, #63b3ed);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-            }
+            }}
             
-            .header-controls {
+            .header-controls {{
                 display: flex;
                 gap: 2rem;
                 align-items: center;
-            }
+            }}
             
-            .status-display {
+            .status-display {{
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 gap: 0.5rem;
-            }
+            }}
             
-            .status-label {
+            .status-label {{
                 font-size: 0.8rem;
                 color: #a0aec0;
                 font-weight: 600;
                 text-transform: uppercase;
                 letter-spacing: 1px;
-            }
+            }}
             
-            .status-value {
+            .status-value {{
                 font-size: 1rem;
                 color: #ffffff;
                 font-weight: 600;
                 background: #2d3748;
                 padding: 0.5rem 1rem;
                 border-radius: 0.5rem;
-                border: 1px solid #4a5568;
-            }
+                border: 1px solid {colors['secondary']};
+            }}
             
             /* Instrument Card Styles */
-            .instrument-card {
+            .instrument-card {{
                 transition: all 0.4s ease;
-            }
+            }}
             
-            .instrument-card:hover {
+            .instrument-card:hover {{
                 transform: translateY(-8px) scale(1.02);
                 box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
-                border-color: #4a9eff;
-            }
+                border-color: {colors['primary']};
+            }}
             
             /* Class List Styles */
             .class-list {
@@ -261,11 +1031,11 @@ def main():
                 transition: all 0.3s ease;
             }
             
-            .class-item:hover {
+            .class-item:hover {{
                 transform: translateY(-2px);
                 box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-                border-color: #4a9eff;
-            }
+                border-color: {colors['primary']};
+            }}
             
             .class-header {
                 display: flex;
@@ -518,6 +1288,20 @@ def main():
             font-weight: bold !important;
         }
         
+        /* Faculty card styling for dark theme */
+        .faculty-card {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%) !important;
+            border: 2px solid #4a5568 !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .faculty-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+            border-color: #4a9eff !important;
+        }
+        
 
             
             /* Dark theme for buttons */
@@ -569,8 +1353,8 @@ def main():
             color: #9ae6b4 !important;
         }
         
-        /* Dark theme for all text elements */
-        .stText, .stMarkdown, .stSubheader, .stHeader, .stTitle {
+                    /* Dark theme for all text elements - comprehensive coverage */
+        .stText, .stMarkdown, .stSubheader, .stHeader, .stTitle, .stCaption {
             color: #ffffff !important;
         }
         
@@ -580,13 +1364,93 @@ def main():
         }
         
         /* Dark theme for Streamlit headings */
-        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
             color: #ffffff !important;
         }
         
         /* Dark theme for sidebar text */
         .css-1d391kg .stMarkdown {
             color: #ffffff !important;
+        }
+        
+        /* Dark theme for all paragraph and span elements */
+        p, span, div {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for Streamlit specific text elements */
+        .stMarkdown p, .stMarkdown span, .stMarkdown div {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for sidebar headings and text */
+        .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg p, .css-1d391kg span {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for main content text */
+        .main .block-container p, .main .block-container span, .main .block-container div {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for all Streamlit text widgets */
+        .stTextInput label, .stSelectbox label, .stCheckbox label, .stRadio label {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for file uploader text */
+        .stFileUploader label, .stFileUploader p {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for button text */
+        .stButton button {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for download button text */
+        .stDownloadButton button {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for expander text */
+        .streamlit-expanderHeader {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for metric text */
+        .stMetric label, .stMetric div {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for chart text */
+        .js-plotly-plot .plotly .main-svg text {
+            fill: #ffffff !important;
+        }
+        
+        /* Dark theme for table text */
+        .stDataFrame th, .stDataFrame td {
+            color: #ffffff !important;
+        }
+        
+        /* Dark theme for any remaining text elements */
+        * {
+            color: #ffffff !important;
+        }
+        
+        /* Exception for specific colored elements */
+        .danger, .warning, .success, .info-box, .instrument-card, .metric-card {
+            color: inherit !important;
+        }
+        
+        /* Exception for faculty cards */
+        .faculty-card {
+            color: inherit !important;
+        }
+        
+        /* Exception for status badges */
+        .status-needed, .status-filled, .class-status {
+            color: inherit !important;
         }
             
             /* Dark theme for critical alert headers */
@@ -630,21 +1494,74 @@ def main():
                 color: #9ae6b4 !important;
                 border-left-color: #48bb78 !important;
             }
+            
+            /* Dark theme for info messages */
+            .stAlert[data-baseweb="notification"][data-testid="stAlert"] {
+                background-color: #2a4365 !important;
+                color: #ffffff !important;
+                border-color: #4a9eff !important;
+            }
+            
+            /* Dark theme for warning messages */
+            .stAlert[data-baseweb="notification"] {
+                background-color: #744210 !important;
+                color: #fbd38d !important;
+                border-color: #ed8936 !important;
+            }
+            
+            /* Dark theme for error messages */
+            .stAlert[data-baseweb="notification"] {
+                background-color: #742a2a !important;
+                color: #fed7d7 !important;
+                border-color: #f56565 !important;
+            }
+            
+            /* Dark theme for all info boxes and containers */
+            .stMarkdown div[style*="background-color"] {
+                color: #ffffff !important;
+            }
+            
+            /* Dark theme for any remaining text that might be hidden */
+            .stMarkdown strong, .stMarkdown b {
+                color: #ffffff !important;
+            }
+            
+            /* Dark theme for list items */
+            .stMarkdown ul li, .stMarkdown ol li {
+                color: #ffffff !important;
+            }
+            
+            /* Dark theme for links */
+            .stMarkdown a {
+                color: #4a9eff !important;
+            }
+            
+            /* Dark theme for code blocks */
+            .stMarkdown code {
+                background-color: #2d3748 !important;
+                color: #e2e8f0 !important;
+            }
+            
+            /* Dark theme for blockquotes */
+            .stMarkdown blockquote {
+                border-left-color: #4a9eff !important;
+                color: #e2e8f0 !important;
+            }
         </style>
         """, unsafe_allow_html=True)
     else:
-        # Light Theme (default)
-        st.markdown("""
+        # Light Theme (default) with Dynamic Colors
+        st.markdown(f"""
         <style>
-                    /* Light Theme Styles */
+                    /* Light Theme Styles with Dynamic Colors */
             /* Header Container */
-            .header-container {
+            .header-container {{
                 background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                border-bottom: 3px solid #2196f3;
+                border-bottom: 3px solid {colors['primary']};
                 padding: 1.5rem 0;
                 margin-bottom: 2rem;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            }
+            }}
             
             .header-content {
                 display: flex;
@@ -655,60 +1572,56 @@ def main():
                 padding: 0 2rem;
             }
             
-            .main-header {
+            .main-header {{
                 font-size: 2.8rem;
-                color: #000000;
+                color: {colors['primary']};
                 font-weight: 700;
                 margin: 0;
                 text-transform: uppercase;
                 letter-spacing: 2px;
-                background: linear-gradient(45deg, #2196f3, #1976d2);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-            }
+            }}
             
-            .header-controls {
+            .header-controls {{
                 display: flex;
                 gap: 2rem;
                 align-items: center;
-            }
+            }}
             
-            .status-display {
+            .status-display {{
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 gap: 0.5rem;
-            }
+            }}
             
-            .status-label {
+            .status-label {{
                 font-size: 0.8rem;
                 color: #666666;
                 font-weight: 600;
                 text-transform: uppercase;
                 letter-spacing: 1px;
-            }
+            }}
             
-            .status-value {
+            .status-value {{
                 font-size: 1rem;
                 color: #333333;
                 font-weight: 600;
                 background: #f8f9fa;
                 padding: 0.5rem 1rem;
                 border-radius: 0.5rem;
-                border: 1px solid #e0e0e0;
-            }
+                border: 1px solid {colors['secondary']};
+            }}
             
             /* Instrument Card Styles */
-            .instrument-card {
+            .instrument-card {{
                 transition: all 0.4s ease;
-            }
+            }}
             
-            .instrument-card:hover {
+            .instrument-card:hover {{
                 transform: translateY(-8px) scale(1.02);
                 box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
-                border-color: #2196f3;
-            }
+                border-color: {colors['primary']};
+            }}
             
             /* Class List Styles */
             .class-list {
@@ -1025,6 +1938,20 @@ def main():
             color: #000000 !important;
         }
         
+        /* Faculty card styling for light theme */
+        .faculty-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+            border: 2px solid #e0e0e0 !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .faculty-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+            border-color: #2196f3 !important;
+        }
+        
         /* Light theme for success messages specifically */
         .stAlert[data-baseweb="notification"] {
             background-color: #e8f5e8 !important;
@@ -1239,7 +2166,7 @@ def main():
         classes_data = st.session_state.get('modal_data', [])
         
         st.markdown("---")
-        st.markdown(f"### 🎵 {instrument} - All Classes ({len(classes_data)} classes)")
+        st.markdown(f"### {instrument} - All Classes ({len(classes_data)} classes)")
         
         # Close button
         if st.button("❌ Close", key="close_modal"):
@@ -1856,11 +2783,13 @@ def main():
                     <span style="font-size: 1.5rem; margin-right: 0.5rem;">{class_info['icon']}</span>
                     <strong style="color: #000000; font-size: 1.2rem;">{class_info['status']}</strong>
                 </div>
-                <strong style="color: #000000;">🎵 {class_info['section_name']}</strong><br>
+                <strong style="color: #000000;">{class_info['section_name']}</strong><br>
                 <strong style="color: #000000;">Course:</strong> {class_info['course_title']}<br>
                 <strong style="color: #000000;">Faculty:</strong> {class_info['faculty']}<br>
                 <strong style="color: #000000;">Schedule:</strong> {class_info['days']} at {class_info['time']}<br>
-                <strong style="color: #000000;">Enrollment:</strong> {class_info['enrolled_count']} / {class_info['total_capacity']} students ({class_info['enrollment_rate']:.1f}%)<br>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <h2 style="color: #000000; margin: 0; font-size: 1.5rem; font-weight: bold;">Enrollment: {class_info['enrolled_count']} / {class_info['total_capacity']} students ({class_info['enrollment_rate']:.1f}%)</h2>
+                </div>
                 <div style="position: absolute; top: 10px; right: 10px; background-color: #d32f2f; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem;">
                     ⚠️ POTENTIALLY WILL BE DROPPED
                 </div>
@@ -1940,6 +2869,365 @@ def main():
         
     else:
         st.success("✅ No classes with less than 4 students enrolled!")
+    
+    # Performance Classes Section - Faculty Cannot be Scheduled for Rating Auditions
+    performance_classes = identify_performance_classes(filtered_df)
+    
+    if performance_classes:
+        st.subheader(f"PERFORMANCE CLASSES - Faculty Cannot be Scheduled for Rating Auditions ({len(performance_classes)})")
+        
+        # Search functionality for performance classes
+        performance_search = st.text_input("🔍 Search performance classes by name, faculty, or course title:", placeholder="Search", key="performance_search")
+        
+        if performance_search:
+            performance_classes = [
+                pc for pc in performance_classes
+                if (performance_search.lower() in pc['section_name'].lower() or
+                    performance_search.lower() in pc['course_title'].lower() or
+                    performance_search.lower() in pc['faculty'].lower())
+            ]
+            if not performance_classes:
+                st.info("No performance classes found matching the search criteria.")
+                return
+        
+        # Create dropdown options for performance classes
+        performance_options = {}
+        for pc in performance_classes:
+            display_name = f"{pc['section_name']} - {pc['faculty']} ({pc['enrollment_rate']:.1f}%)"
+            performance_options[display_name] = pc
+        
+        # Create dropdown
+        selected_performance_class = st.selectbox(
+            "Select a performance class to view details:",
+            options=list(performance_options.keys()),
+            index=0 if performance_options else None,
+            help="Choose a performance class to see detailed information",
+            key="performance_selector"
+        )
+        
+        # Display selected performance class details
+        if selected_performance_class and selected_performance_class in performance_options:
+            pc_info = performance_options[selected_performance_class]
+            st.markdown(f"""
+            <div class="info-box warning" style="border-left: 6px solid #ff9800; background-color: #fff3e0; position: relative;">
+                <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-size: 1.5rem; margin-right: 0.5rem;"></span>
+                    <strong style="color: #000000; font-size: 1.2rem;">PERFORMANCE CLASS</strong>
+                </div>
+                <strong style="color: #000000;">{pc_info['section_name']}</strong><br>
+                <strong style="color: #000000;">Course:</strong> {pc_info['course_title']}<br>
+                <strong style="color: #000000;">Faculty:</strong> {pc_info['faculty']}<br>
+                <strong style="color: #000000;">Schedule:</strong> {pc_info['days']} at {pc_info['time']}<br>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <h2 style="color: #000000; margin: 0; font-size: 1.5rem; font-weight: bold;">Enrollment: {pc_info['enrolled_count']} / {pc_info['total_capacity']} students ({pc_info['enrollment_rate']:.1f}%)</h2>
+                </div>
+                <strong style="color: #000000;">Style:</strong> {pc_info['style']}<br>
+                <strong style="color: #000000;">Rating:</strong> {pc_info['rating']}<br>
+                <div style="position: absolute; top: 10px; right: 10px; background-color: #ff9800; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem;">
+                    ⚠️ NO RATING AUDITIONS
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Display the specific reason
+            st.markdown(f"""
+            <div class="metric-card" style="background-color: #fff3e0; border-color: #ff9800; margin-top: 1rem;">
+                <h3 style="color: #ef6c00; margin-bottom: 1rem;">📋 Performance Class Details</h3>
+                <p><strong>Reason:</strong> {pc_info['performance_reason']}</p>
+                <p><strong>Faculty Scheduling:</strong> Cannot be scheduled for rating auditions</p>
+                <p><strong>Class Type:</strong> Performance/Ensemble Class</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Summary statistics
+        enmx_100_count = len([pc for pc in performance_classes if 'ENMX-100' in pc['section_name']])
+        faculty_pisj_count = len([pc for pc in performance_classes if 'PISJ' in pc['faculty']])
+        faculty_ends_count = len([pc for pc in performance_classes if 'ENDS' in pc['faculty']])
+        other_performance_count = len([pc for pc in performance_classes if 'ENMX-100' not in pc['section_name'] and 'PISJ' not in pc['faculty'] and 'ENDS' not in pc['faculty']])
+        
+        st.markdown(f"""
+        <div class="metric-card" style="background-color: #fff3e0; border-color: #ff9800; margin-top: 1rem;">
+            <h3 style="color: #ef6c00; margin-bottom: 1rem;">📊 Performance Classes Summary</h3>
+            <p><strong>Total Performance Classes:</strong> {len(performance_classes)}</p>
+            <p><strong>ENMX-100 Classes:</strong> {enmx_100_count}</p>
+            <p><strong>Faculty PISJ Classes:</strong> {faculty_pisj_count}</p>
+            <p><strong>Faculty ENDS Classes:</strong> {faculty_ends_count}</p>
+            <p><strong>Other Performance Classes:</strong> {other_performance_count}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Download button for performance classes
+        st.markdown("---")
+        st.subheader("📥 Download Performance Classes Data")
+        
+        # Prepare data for download
+        performance_download_data = []
+        for pc in performance_classes:
+            performance_download_data.append({
+                'Section': pc['section_name'],
+                'Course_Title': pc['course_title'],
+                'Faculty': pc['faculty'],
+                'Schedule_Days': pc['days'],
+                'Schedule_Time': pc['time'],
+                'Enrolled_Students': pc['enrolled_count'],
+                'Total_Capacity': pc['total_capacity'],
+                'Enrollment_Rate_Percent': round(pc['enrollment_rate'], 1),
+                'Style': pc['style'],
+                'Rating': pc['rating'],
+                'Performance_Reason': pc['performance_reason'],
+                'Scheduling_Note': 'Cannot be scheduled for rating auditions'
+            })
+        
+        # Create DataFrame for download
+        performance_download_df = pd.DataFrame(performance_download_data)
+        
+        # Download button
+        csv = performance_download_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download Performance Classes (CSV)",
+            data=csv,
+            file_name=f"performance_classes_{selected_term}.csv",
+            mime="text/csv",
+            help="Download all performance classes as a CSV file",
+            key="download_performance_classes"
+        )
+        
+    else:
+        st.success("✅ No performance classes found!")
+    
+    # Registration Preferences Section - Staff Placement Priority
+    st.markdown("---")
+    st.subheader("🎯 Registration Preferences - Staff Placement Priority")
+    
+    # Analyze registration preferences
+    registration_data = analyze_registration_preferences(filtered_df)
+    
+    if registration_data:
+        # Search functionality for registration preferences
+        registration_search = st.text_input("🔍 Search registration preferences by class name, faculty, or course title:", placeholder="Search", key="registration_search")
+        
+        if registration_search:
+            registration_data = [
+                rd for rd in registration_data
+                if (registration_search.lower() in rd['section_name'].lower() or
+                    registration_search.lower() in rd['course_title'].lower() or
+                    registration_search.lower() in rd['faculty'].lower())
+            ]
+            if not registration_data:
+                st.info("No classes found matching the search criteria.")
+                return
+        
+        # Filter by priority level
+        priority_filter = st.selectbox(
+            "Filter by Priority Level:",
+            ["All Priorities", "HIGHEST - 3 Students", "HIGH - 2 Students", "MEDIUM - 1 Student", "LOW - 0 Students"],
+            key="priority_filter"
+        )
+        
+        if priority_filter != "All Priorities":
+            registration_data = [rd for rd in registration_data if rd['priority_level'] == priority_filter]
+        
+        # Filter by contract type
+        contract_filter = st.selectbox(
+            "Filter by Faculty Contract Type:",
+            ["All Contracts", "FT", "PT3yr", "PT_special", "adjunct", "Unknown"],
+            key="registration_contract_filter"
+        )
+        
+        if contract_filter != "All Contracts":
+            registration_data = [rd for rd in registration_data if rd['contract_type'] == contract_filter]
+        
+        # Display registration preferences in priority order
+        st.markdown("### 📋 Priority Placement List (Sorted by Registration Preference)")
+        
+        # Create tabs for different priority levels
+        highest_priority = [rd for rd in registration_data if rd['priority_level'] == "HIGHEST - 3 Students"]
+        high_priority = [rd for rd in registration_data if rd['priority_level'] == "HIGH - 2 Students"]
+        medium_priority = [rd for rd in registration_data if rd['priority_level'] == "MEDIUM - 1 Student"]
+        low_priority = [rd for rd in registration_data if rd['priority_level'] == "LOW - 0 Students"]
+        
+        tab1, tab2, tab3, tab4 = st.tabs([
+            f"HIGHEST Priority ({len(highest_priority)})",
+            f"HIGH Priority ({len(high_priority)})", 
+            f"MEDIUM Priority ({len(medium_priority)})",
+            f"LOW Priority ({len(low_priority)})"
+        ])
+        
+        with tab1:
+            if highest_priority:
+                for rd in highest_priority:
+                    contract_color = get_contract_color(rd['contract_type'])
+                    st.markdown(f"""
+                    <div class="info-box" style="border-left: 6px solid {contract_color}; background-color: #f8f9fa; margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong style="color: #000000; font-size: 1.1rem;">{rd['section_name']}</strong>
+                            <span style="background-color: {contract_color}; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: bold;">
+                                {rd['contract_type']}
+                            </span>
+                        </div>
+                        <div style="color: #000000;">
+                            <strong>Course:</strong> {rd['course_title']}<br>
+                            <strong>Faculty:</strong> {rd['faculty']}<br>
+                            <strong>Schedule:</strong> {rd['days']} at {rd['time']}<br>
+                            <div style="text-align: center; margin: 1rem 0;">
+                                <h2 style="color: #000000; margin: 0; font-size: 1.5rem; font-weight: bold;">Enrollment: {rd['enrolled_count']} / {rd['total_capacity']} students ({rd['enrollment_rate']:.1f}%)</h2>
+                            </div>
+                            <strong>Style:</strong> {rd['style']}<br>
+                            <strong>Rating:</strong> {rd['rating']}<br>
+                            <strong>Instruments Needed:</strong> {rd['instruments_needed']}<br>
+                            <strong>Priority Score:</strong> {rd['priority_score']}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No classes in HIGHEST priority category.")
+        
+        with tab2:
+            if high_priority:
+                for rd in high_priority:
+                    contract_color = get_contract_color(rd['contract_type'])
+                    st.markdown(f"""
+                    <div class="info-box" style="border-left: 6px solid {contract_color}; background-color: #f8f9fa; margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong style="color: #000000; font-size: 1.1rem;">{rd['section_name']}</strong>
+                            <span style="background-color: {contract_color}; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: bold;">
+                                {rd['contract_type']}
+                            </span>
+                        </div>
+                        <div style="color: #000000;">
+                            <strong>Course:</strong> {rd['course_title']}<br>
+                            <strong>Faculty:</strong> {rd['faculty']}<br>
+                            <strong>Schedule:</strong> {rd['days']} at {rd['time']}<br>
+                            <div style="text-align: center; margin: 1rem 0;">
+                                <h2 style="color: #000000; margin: 0; font-size: 1.5rem; font-weight: bold;">Enrollment: {rd['enrolled_count']} / {rd['total_capacity']} students ({rd['enrollment_rate']:.1f}%)</h2>
+                            </div>
+                            <strong>Style:</strong> {rd['style']}<br>
+                            <strong>Rating:</strong> {rd['rating']}<br>
+                            <strong>Instruments Needed:</strong> {rd['instruments_needed']}<br>
+                            <strong>Priority Score:</strong> {rd['priority_score']}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No classes in HIGH priority category.")
+        
+        with tab3:
+            if medium_priority:
+                for rd in medium_priority:
+                    contract_color = get_contract_color(rd['contract_type'])
+                    st.markdown(f"""
+                    <div class="info-box" style="border-left: 6px solid {contract_color}; background-color: #f8f9fa; margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong style="color: #000000; font-size: 1.1rem;">{rd['section_name']}</strong>
+                            <span style="background-color: {contract_color}; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: bold;">
+                                {rd['contract_type']}
+                            </span>
+                        </div>
+                        <div style="color: #000000;">
+                            <strong>Course:</strong> {rd['course_title']}<br>
+                            <strong>Faculty:</strong> {rd['faculty']}<br>
+                            <strong>Schedule:</strong> {rd['days']} at {rd['time']}<br>
+                            <div style="text-align: center; margin: 1rem 0;">
+                                <h2 style="color: #000000; margin: 0; font-size: 1.5rem; font-weight: bold;">Enrollment: {rd['enrolled_count']} / {rd['total_capacity']} students ({rd['enrollment_rate']:.1f}%)</h2>
+                            </div>
+                            <strong>Style:</strong> {rd['style']}<br>
+                            <strong>Rating:</strong> {rd['rating']}<br>
+                            <strong>Instruments Needed:</strong> {rd['instruments_needed']}<br>
+                            <strong>Priority Score:</strong> {rd['priority_score']}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No classes in MEDIUM priority category.")
+        
+        with tab4:
+            if low_priority:
+                for rd in low_priority:
+                    contract_color = get_contract_color(rd['contract_type'])
+                    st.markdown(f"""
+                    <div class="info-box" style="border-left: 6px solid {contract_color}; background-color: #f8f9fa; margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong style="color: #000000; font-size: 1.1rem;">{rd['section_name']}</strong>
+                            <span style="background-color: {contract_color}; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: bold;">
+                                {rd['contract_type']}
+                            </span>
+                        </div>
+                        <div style="color: #000000;">
+                            <strong>Course:</strong> {rd['course_title']}<br>
+                            <strong>Faculty:</strong> {rd['faculty']}<br>
+                            <strong>Schedule:</strong> {rd['days']} at {rd['time']}<br>
+                            <div style="text-align: center; margin: 1rem 0;">
+                                <h2 style="color: #000000; margin: 0; font-size: 1.5rem; font-weight: bold;">Enrollment: {rd['enrolled_count']} / {rd['total_capacity']} students ({rd['enrollment_rate']:.1f}%)</h2>
+                            </div>
+                            <strong>Style:</strong> {rd['style']}<br>
+                            <strong>Rating:</strong> {rd['rating']}<br>
+                            <strong>Instruments Needed:</strong> {rd['instruments_needed']}<br>
+                            <strong>Priority Score:</strong> {rd['priority_score']}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No classes in LOW priority category.")
+        
+        # Summary statistics
+        ft_count = len([rd for rd in registration_data if rd['contract_type'] == 'FT'])
+        pt3yr_count = len([rd for rd in registration_data if rd['contract_type'] == 'PT3yr'])
+        pt_special_count = len([rd for rd in registration_data if rd['contract_type'] == 'PT_special'])
+        adjunct_count = len([rd for rd in registration_data if rd['contract_type'] == 'adjunct'])
+        unknown_count = len([rd for rd in registration_data if rd['contract_type'] == 'Unknown'])
+        
+        st.markdown(f"""
+        <div class="metric-card" style="background-color: #f0f8ff; border-color: #2196f3; margin-top: 1rem;">
+            <h3 style="color: #1976d2; margin-bottom: 1rem;">📊 Registration Preferences Summary</h3>
+            <p><strong>Total Classes Analyzed:</strong> {len(registration_data)}</p>
+            <p><strong>Full Time Faculty Classes:</strong> <span style="color: #ff0000; font-weight: bold;">{ft_count}</span></p>
+            <p><strong>Part Time 3-Year Contract Classes:</strong> <span style="color: #0000ff; font-weight: bold;">{pt3yr_count}</span></p>
+            <p><strong>Part Time Special Circumstances Classes:</strong> <span style="color: #ffa500; font-weight: bold;">{pt_special_count}</span></p>
+            <p><strong>Adjunct Faculty Classes:</strong> <span style="color: #8b4513; font-weight: bold;">{adjunct_count}</span></p>
+            <p><strong>Unknown Contract Type:</strong> <span style="color: #808080; font-weight: bold;">{unknown_count}</span></p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Download button for registration preferences
+        st.markdown("---")
+        st.subheader("📥 Download Registration Preferences Data")
+        
+        # Prepare data for download
+        registration_download_data = []
+        for rd in registration_data:
+            registration_download_data.append({
+                'Section': rd['section_name'],
+                'Course_Title': rd['course_title'],
+                'Faculty': rd['faculty'],
+                'Contract_Type': rd['contract_type'],
+                'Enrolled_Students': rd['enrolled_count'],
+                'Total_Capacity': rd['total_capacity'],
+                'Enrollment_Rate_Percent': round(rd['enrollment_rate'], 1),
+                'Priority_Level': rd['priority_level'],
+                'Priority_Score': rd['priority_score'],
+                'Schedule_Days': rd['days'],
+                'Schedule_Time': rd['time'],
+                'Style': rd['style'],
+                'Rating': rd['rating'],
+                'Instruments_Needed': rd['instruments_needed']
+            })
+        
+        # Create DataFrame for download
+        registration_download_df = pd.DataFrame(registration_download_data)
+        
+        # Download button
+        csv = registration_download_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download Registration Preferences (CSV)",
+            data=csv,
+            file_name=f"registration_preferences_{selected_term}.csv",
+            mime="text/csv",
+            help="Download all registration preferences data as a CSV file",
+            key="download_registration_preferences"
+        )
+        
+    else:
+        st.info("No registration data available for analysis.")
     
     # Critical alerts section
     st.markdown('<div class="critical-alerts-section">', unsafe_allow_html=True)
