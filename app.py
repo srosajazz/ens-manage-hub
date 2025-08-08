@@ -320,6 +320,11 @@ def get_faculty_file_info(faculty_name):
     return None
 
 def main():
+    # Test section to verify app is working
+    st.markdown("## 🧪 App Status Test")
+    st.success("✅ App is running successfully!")
+    st.info("📊 Loading data...")
+    
     # Load data first
     df = load_data()
     
@@ -1547,6 +1552,854 @@ def main():
                 border-left-color: #4a9eff !important;
                 color: #e2e8f0 !important;
             }}
+            
+            /* Enhanced Professional Instrument Status Cards */
+            .instrument-status-card {{
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                border: 2px solid #e0e0e0;
+                border-radius: 1rem;
+                padding: 1.5rem;
+                margin: 0.5rem;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+                min-height: 200px;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }}
+            
+            .instrument-status-card::before {{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, {colors['primary']}, {colors['accent']});
+                opacity: 0.8;
+            }}
+            
+            .instrument-status-card:hover {{
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+                border-color: {colors['primary']};
+            }}
+            
+            .instrument-status-card .card-header {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #f0f0f0;
+            }}
+            
+            .instrument-status-card .status-indicator {{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border: 2px solid #dee2e6;
+                transition: all 0.3s ease;
+            }}
+            
+            .instrument-status-card:hover .status-indicator {{
+                transform: scale(1.1);
+                border-color: {colors['primary']};
+            }}
+            
+            .instrument-status-card .status-icon {{
+                font-size: 1.5rem;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            }}
+            
+            .instrument-status-card .instrument-title {{
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                flex-grow: 1;
+                text-align: center;
+            }}
+            
+            .instrument-status-card .card-content {{
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }}
+            
+            .instrument-status-card .metric-grid {{
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }}
+            
+            .instrument-status-card .metric-item {{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+                border-radius: 0.75rem;
+                border: 1px solid #e9ecef;
+                transition: all 0.3s ease;
+            }}
+            
+            .instrument-status-card .metric-item:hover {{
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                border-color: {colors['secondary']};
+                transform: translateX(4px);
+            }}
+            
+            .instrument-status-card .metric-label {{
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #6c757d;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }}
+            
+            .instrument-status-card .metric-value {{
+                font-size: 1.1rem;
+                font-weight: 700;
+                padding: 0.25rem 0.75rem;
+                border-radius: 0.5rem;
+                min-width: 60px;
+                text-align: center;
+            }}
+            
+            .instrument-status-card .metric-value.needed {{
+                background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+                color: #c53030;
+                border: 1px solid #feb2b2;
+            }}
+            
+            .instrument-status-card .metric-value.enrolled {{
+                background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+                color: #2f855a;
+                border: 1px solid #9ae6b4;
+            }}
+            
+            .instrument-status-card .metric-value.fill-rate {{
+                background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+                color: #2b6cb0;
+                border: 1px solid #90cdf4;
+            }}
+            
+            .instrument-status-card .card-footer {{
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #f0f0f0;
+                text-align: center;
+            }}
+            
+            .instrument-status-card .classes-count {{
+                font-size: 0.85rem;
+                color: #6c757d;
+                font-weight: 500;
+                padding: 0.5rem 1rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 0.5rem;
+                border: 1px solid #dee2e6;
+            }}
+            
+            /* Status-specific styling */
+            .instrument-status-card.danger {{
+                border-color: #dc3545;
+                background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            }}
+            
+            .instrument-status-card.danger::before {{
+                background: linear-gradient(90deg, #dc3545, #e53e3e);
+            }}
+            
+            .instrument-status-card.warning {{
+                border-color: #fd7e14;
+                background: linear-gradient(135deg, #fffbf0 0%, #fef5e7 100%);
+            }}
+            
+            .instrument-status-card.warning::before {{
+                background: linear-gradient(90deg, #fd7e14, #f6ad55);
+            }}
+            
+            .instrument-status-card.success {{
+                border-color: #28a745;
+                background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            }}
+            
+            .instrument-status-card.success::before {{
+                background: linear-gradient(90deg, #28a745, #48bb78);
+            }}
+            
+            /* Responsive design for cards */
+            @media (max-width: 768px) {{
+                .instrument-status-card {{
+                    margin: 0.25rem;
+                    padding: 1rem;
+                    min-height: 180px;
+                }}
+                
+                .instrument-status-card .instrument-title {{
+                    font-size: 1.2rem;
+                }}
+                
+                .instrument-status-card .metric-grid {{
+                    gap: 0.75rem;
+                }}
+                
+                .instrument-status-card .metric-item {{
+                    padding: 0.5rem 0.75rem;
+                }}
+                
+                .instrument-status-card .metric-value {{
+                    font-size: 1rem;
+                    min-width: 50px;
+                }}
+            }}
+            
+            /* Animation for status icons */
+            .instrument-status-card .status-icon {{
+                animation: pulse 2s infinite;
+            }}
+            
+            @keyframes pulse {{
+                0% {{ transform: scale(1); }}
+                50% {{ transform: scale(1.05); }}
+                100% {{ transform: scale(1); }}
+            }}
+            
+            .instrument-status-card.danger .status-icon {{
+                animation: shake 0.5s ease-in-out infinite alternate;
+            }}
+            
+            @keyframes shake {{
+                0% {{ transform: translateX(0); }}
+                100% {{ transform: translateX(2px); }}
+            }}
+            
+            .instrument-status-card.success .status-icon {{
+                animation: bounce 1s ease-in-out infinite;
+            }}
+            
+            @keyframes bounce {{
+                0%, 20%, 50%, 80%, 100% {{ transform: translateY(0); }}
+                40% {{ transform: translateY(-3px); }}
+                60% {{ transform: translateY(-2px); }}
+            }}
+            
+            /* Enhanced Professional Instrument Status Cards - Dark Theme */
+            .instrument-status-card {{
+                background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+                border: 2px solid #4a5568;
+                border-radius: 1rem;
+                padding: 1.5rem;
+                margin: 0.5rem;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+                min-height: 200px;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }}
+            
+            .instrument-status-card::before {{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #4a9eff, #3182ce);
+                opacity: 0.8;
+            }}
+            
+            .instrument-status-card:hover {{
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+                border-color: #4a9eff;
+            }}
+            
+            .instrument-status-card .card-header {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #4a5568;
+            }}
+            
+            .instrument-status-card .status-indicator {{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+                border: 2px solid #718096;
+                transition: all 0.3s ease;
+            }}
+            
+            .instrument-status-card:hover .status-indicator {{
+                transform: scale(1.1);
+                border-color: #4a9eff;
+            }}
+            
+            .instrument-status-card .status-icon {{
+                font-size: 1.5rem;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            }}
+            
+            .instrument-status-card .instrument-title {{
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: #ffffff;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                flex-grow: 1;
+                text-align: center;
+            }}
+            
+            .instrument-status-card .card-content {{
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }}
+            
+            .instrument-status-card .metric-grid {{
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }}
+            
+            .instrument-status-card .metric-item {{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+                border-radius: 0.75rem;
+                border: 1px solid #718096;
+                transition: all 0.3s ease;
+            }}
+            
+            .instrument-status-card .metric-item:hover {{
+                background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+                border-color: #4a9eff;
+                transform: translateX(4px);
+            }}
+            
+            .instrument-status-card .metric-label {{
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #a0aec0;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }}
+            
+            .instrument-status-card .metric-value {{
+                font-size: 1.1rem;
+                font-weight: 700;
+                padding: 0.25rem 0.75rem;
+                border-radius: 0.5rem;
+                min-width: 60px;
+                text-align: center;
+            }}
+            
+            .instrument-status-card .metric-value.needed {{
+                background: linear-gradient(135deg, #742a2a 0%, #c53030 100%);
+                color: #fed7d7;
+                border: 1px solid #f56565;
+            }}
+            
+            .instrument-status-card .metric-value.enrolled {{
+                background: linear-gradient(135deg, #22543d 0%, #38a169 100%);
+                color: #9ae6b4;
+                border: 1px solid #48bb78;
+            }}
+            
+            .instrument-status-card .metric-value.fill-rate {{
+                background: linear-gradient(135deg, #2a4365 0%, #3182ce 100%);
+                color: #bee3f8;
+                border: 1px solid #4a9eff;
+            }}
+            
+            .instrument-status-card .card-footer {{
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #4a5568;
+                text-align: center;
+            }}
+            
+            .instrument-status-card .classes-count {{
+                font-size: 0.85rem;
+                color: #a0aec0;
+                font-weight: 500;
+                padding: 0.5rem 1rem;
+                background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+                border-radius: 0.5rem;
+                border: 1px solid #718096;
+            }}
+            
+            /* Status-specific styling - Dark Theme */
+            .instrument-status-card.danger {{
+                border-color: #f56565;
+                background: linear-gradient(135deg, #742a2a 0%, #c53030 100%);
+            }}
+            
+            .instrument-status-card.danger::before {{
+                background: linear-gradient(90deg, #f56565, #e53e3e);
+            }}
+            
+            .instrument-status-card.warning {{
+                border-color: #ed8936;
+                background: linear-gradient(135deg, #744210 0%, #dd6b20 100%);
+            }}
+            
+            .instrument-status-card.warning::before {{
+                background: linear-gradient(90deg, #ed8936, #f6ad55);
+            }}
+            
+            .instrument-status-card.success {{
+                border-color: #48bb78;
+                background: linear-gradient(135deg, #22543d 0%, #38a169 100%);
+            }}
+            
+            .instrument-status-card.success::before {{
+                background: linear-gradient(90deg, #48bb78, #38a169);
+            }}
+            
+            /* Responsive design for cards - Dark Theme */
+            @media (max-width: 768px) {{
+                .instrument-status-card {{
+                    margin: 0.25rem;
+                    padding: 1rem;
+                    min-height: 180px;
+                }}
+                
+                .instrument-status-card .instrument-title {{
+                    font-size: 1.2rem;
+                }}
+                
+                .instrument-status-card .metric-grid {{
+                    gap: 0.75rem;
+                }}
+                
+                .instrument-status-card .metric-item {{
+                    padding: 0.5rem 0.75rem;
+                }}
+                
+                .instrument-status-card .metric-value {{
+                    font-size: 1rem;
+                    min-width: 50px;
+                }}
+            }}
+            
+            /* Animation for status icons - Dark Theme */
+            .instrument-status-card .status-icon {{
+                animation: pulse 2s infinite;
+            }}
+            
+            @keyframes pulse {{
+                0% {{ transform: scale(1); }}
+                50% {{ transform: scale(1.05); }}
+                100% {{ transform: scale(1); }}
+            }}
+            
+            .instrument-status-card.danger .status-icon {{
+                animation: shake 0.5s ease-in-out infinite alternate;
+            }}
+            
+            @keyframes shake {{
+                0% {{ transform: translateX(0); }}
+                100% {{ transform: translateX(2px); }}
+            }}
+            
+            .instrument-status-card.success .status-icon {{
+                animation: bounce 1s ease-in-out infinite;
+            }}
+            
+            @keyframes bounce {{
+                0%, 20%, 50%, 80%, 100% {{ transform: translateY(0); }}
+                40% {{ transform: translateY(-3px); }}
+                60% {{ transform: translateY(-2px); }}
+            }}
+            
+            /* Chart Tooltip Styles - Dark Theme */
+            .js-plotly-plot .plotly .main-svg text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .hoverlabel {{
+                background-color: #2d3748 !important;
+                border: 2px solid #4a5568 !important;
+                border-radius: 8px !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            }}
+            
+            .js-plotly-plot .plotly .hoverlabel .hovertext {{
+                color: #ffffff !important;
+                font-family: 'Arial', sans-serif !important;
+                font-size: 12px !important;
+                font-weight: 500 !important;
+                line-height: 1.4 !important;
+            }}
+            
+            .js-plotly-plot .plotly .hoverlabel .hovertext b {{
+                color: #63b3ed !important;
+                font-weight: 700 !important;
+            }}
+            
+            /* Ensure all chart text is visible in dark theme */
+            .js-plotly-plot .plotly .legend text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .legend .traces text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .legend .traces .legendtext {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Chart title and axis labels */
+            .js-plotly-plot .plotly .gtitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-gtitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-xtitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-ytitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-xtick text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-ytick text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Emergency text visibility fixes for dark theme */
+            .stMarkdown, .stText, .stSubheader, .stHeader, .stTitle, .stCaption {{
+                color: #ffffff !important;
+                font-weight: 500 !important;
+            }}
+            
+            .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {{
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }}
+            
+            .stMarkdown p, .stMarkdown span, .stMarkdown div {{
+                color: #ffffff !important;
+                font-weight: 500 !important;
+            }}
+            
+            /* Ensure all text elements are visible in dark theme */
+            p, span, div, h1, h2, h3, h4, h5, h6 {{
+                color: #ffffff !important;
+            }}
+            
+            /* Additional comprehensive text visibility fixes */
+            div[data-testid="stMarkdown"] {{
+                color: #ffffff !important;
+            }}
+            
+            div[data-testid="stMarkdown"] h1,
+            div[data-testid="stMarkdown"] h2,
+            div[data-testid="stMarkdown"] h3,
+            div[data-testid="stMarkdown"] h4,
+            div[data-testid="stMarkdown"] h5,
+            div[data-testid="stMarkdown"] h6 {{
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }}
+            
+            div[data-testid="stMarkdown"] p,
+            div[data-testid="stMarkdown"] span,
+            div[data-testid="stMarkdown"] div {{
+                color: #ffffff !important;
+            }}
+            
+            /* Plotly chart title specific fixes */
+            .js-plotly-plot .plotly .gtitle,
+            .js-plotly-plot .plotly .g-gtitle {{
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .gtitle text,
+            .js-plotly-plot .plotly .g-gtitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }}
+            
+            /* Force all SVG text elements to be visible */
+            .js-plotly-plot .plotly svg text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Streamlit widget text visibility */
+            .stSelectbox, .stTextInput, .stNumberInput, .stSlider, .stCheckbox, .stRadio {{
+                color: #ffffff !important;
+            }}
+            
+            .stSelectbox label, .stTextInput label, .stNumberInput label, .stSlider label, .stCheckbox label, .stRadio label {{
+                color: #ffffff !important;
+                font-weight: 500 !important;
+            }}
+            
+            /* Tab text visibility */
+            .stTabs [data-baseweb="tab-list"] {{
+                color: #ffffff !important;
+            }}
+            
+            .stTabs [data-baseweb="tab"] {{
+                color: #ffffff !important;
+            }}
+            
+            .stTabs [data-baseweb="tab"] span {{
+                color: #ffffff !important;
+            }}
+            
+            /* Sidebar text visibility */
+            .css-1d391kg {{
+                color: #ffffff !important;
+            }}
+            
+            .css-1d391kg label {{
+                color: #ffffff !important;
+            }}
+            
+            /* Enhanced sidebar text visibility for dark theme */
+            .css-1d391kg, .css-1d391kg * {{
+                color: #ffffff !important;
+            }}
+            
+            /* Specific sidebar element overrides */
+            .css-1d391kg .stSelectbox label,
+            .css-1d391kg .stTextInput label,
+            .css-1d391kg .stCheckbox label,
+            .css-1d391kg .stRadio label {{
+                color: #ffffff !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Sidebar section headers */
+            .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg h4, .css-1d391kg h5, .css-1d391kg h6 {{
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }}
+            
+            /* Sidebar text elements */
+            .css-1d391kg p, .css-1d391kg span, .css-1d391kg div {{
+                color: #ffffff !important;
+            }}
+            
+            /* Force all sidebar text to be white */
+            .css-1d391kg, .css-1d391kg *, .css-1d391kg label, .css-1d391kg p, .css-1d391kg span, .css-1d391kg div {{
+                color: #ffffff !important;
+            }}
+            
+            /* Additional sidebar selectors for dark theme */
+            [data-testid="stSidebar"] {{
+                color: #ffffff !important;
+            }}
+            
+            [data-testid="stSidebar"] * {{
+                color: #ffffff !important;
+            }}
+            
+            [data-testid="stSidebar"] label {{
+                color: #ffffff !important;
+                font-weight: 600 !important;
+            }}
+            
+            [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] h5, [data-testid="stSidebar"] h6 {{
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }}
+            
+            /* Target sidebar widgets specifically */
+            [data-testid="stSidebar"] .stSelectbox label,
+            [data-testid="stSidebar"] .stTextInput label,
+            [data-testid="stSidebar"] .stCheckbox label,
+            [data-testid="stSidebar"] .stRadio label {{
+                color: #ffffff !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Universal text visibility override */
+            body, html, div, span, p, h1, h2, h3, h4, h5, h6, label, text {{
+                color: #ffffff !important;
+            }}
+            
+            /* Chart container text */
+            .element-container {{
+                color: #ffffff !important;
+            }}
+            
+            .element-container div {{
+                color: #ffffff !important;
+            }}
+            
+            /* Streamlit specific containers */
+            .block-container {{
+                color: #ffffff !important;
+            }}
+            
+            .block-container div {{
+                color: #ffffff !important;
+            }}
+            
+            /* Force all text to be white in dark theme */
+            * {{
+                color: #ffffff !important;
+            }}
+            
+            /* Specific overrides for chart titles and labels */
+            .js-plotly-plot .plotly .gtitle text,
+            .js-plotly-plot .plotly .g-gtitle text,
+            .js-plotly-plot .plotly .g-xtitle text,
+            .js-plotly-plot .plotly .g-ytitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-weight: bold !important;
+            }}
+            
+            /* Ensure all plotly text elements are visible */
+            .js-plotly-plot .plotly .main-svg text,
+            .js-plotly-plot .plotly .legend text,
+            .js-plotly-plot .plotly .g-xtick text,
+            .js-plotly-plot .plotly .g-ytick text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Additional specific rules for chart titles in dark theme */
+            .js-plotly-plot .plotly .gtitle, .js-plotly-plot .plotly .g-gtitle {{
+                color: #ffffff !important;
+            }}
+            
+            .js-plotly-plot .plotly .gtitle text, .js-plotly-plot .plotly .g-gtitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }}
+            
+            /* Force all SVG text elements to be visible in dark theme */
+            .js-plotly-plot .plotly svg text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Specific override for chart titles */
+            .js-plotly-plot .plotly .gtitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }}
+            
+            /* Override for any dark text in charts */
+            .js-plotly-plot .plotly text[fill="black"], .js-plotly-plot .plotly text[fill="#000000"] {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Force all text in plotly containers to be white */
+            .element-container .js-plotly-plot .plotly text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Additional override for chart titles with higher specificity */
+            .element-container .js-plotly-plot .plotly .gtitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }}
+            
+            /* Force all chart axis labels to be visible in dark theme */
+            .js-plotly-plot .plotly .g-xtitle text, .js-plotly-plot .plotly .g-ytitle text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-weight: bold !important;
+                font-size: 14px !important;
+            }}
+            
+            /* Force all chart tick labels to be visible */
+            .js-plotly-plot .plotly .g-xtick text, .js-plotly-plot .plotly .g-ytick text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-size: 12px !important;
+            }}
+            
+            /* Force legend text to be visible */
+            .js-plotly-plot .plotly .legend text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+                font-size: 12px !important;
+            }}
+            
+            /* Force all text in plotly charts to be white */
+            .js-plotly-plot .plotly text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Specific override for any dark or light colored text */
+            .js-plotly-plot .plotly text[fill="black"], 
+            .js-plotly-plot .plotly text[fill="#000000"],
+            .js-plotly-plot .plotly text[fill="darkgray"],
+            .js-plotly-plot .plotly text[fill="#a9a9a9"] {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
+            
+            /* Force all text in chart containers to be white */
+            .element-container .js-plotly-plot .plotly text,
+            .element-container .js-plotly-plot .plotly .gtitle text,
+            .element-container .js-plotly-plot .plotly .g-xtitle text,
+            .element-container .js-plotly-plot .plotly .g-ytitle text,
+            .element-container .js-plotly-plot .plotly .g-xtick text,
+            .element-container .js-plotly-plot .plotly .g-ytick text,
+            .element-container .js-plotly-plot .plotly .legend text {{
+                fill: #ffffff !important;
+                color: #ffffff !important;
+            }}
         </style>
         """, unsafe_allow_html=True)
     else:
@@ -2030,6 +2883,368 @@ def main():
                 color: #2e7d32 !important;
                 border-left-color: #4caf50 !important;
             }}
+            
+            /* Emergency text visibility fixes */
+            .stMarkdown, .stText, .stSubheader, .stHeader, .stTitle, .stCaption {{
+                color: #000000 !important;
+                font-weight: 500 !important;
+            }}
+            
+            .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {{
+                color: #000000 !important;
+                font-weight: bold !important;
+            }}
+            
+            .stMarkdown p, .stMarkdown span, .stMarkdown div {{
+                color: #000000 !important;
+                font-weight: 500 !important;
+            }}
+            
+            /* Ensure all text elements are visible */
+            p, span, div, h1, h2, h3, h4, h5, h6 {{
+                color: #000000 !important;
+            }}
+            
+            /* Chart Tooltip Styles - Light Theme */
+            .js-plotly-plot .plotly .main-svg text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .hoverlabel {{
+                background-color: #ffffff !important;
+                border: 2px solid #e0e0e0 !important;
+                border-radius: 8px !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            }}
+            
+            .js-plotly-plot .plotly .hoverlabel .hovertext {{
+                color: #333333 !important;
+                font-family: 'Arial', sans-serif !important;
+                font-size: 12px !important;
+                font-weight: 500 !important;
+                line-height: 1.4 !important;
+            }}
+            
+            .js-plotly-plot .plotly .hoverlabel .hovertext b {{
+                color: #1f77b4 !important;
+                font-weight: 700 !important;
+            }}
+            
+            /* Ensure all chart text is visible in light theme */
+            .js-plotly-plot .plotly .legend text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .legend .traces text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .legend .traces .legendtext {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Chart title and axis labels */
+            .js-plotly-plot .plotly .gtitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-gtitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-xtitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-ytitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-xtick text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .g-ytick text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Emergency text visibility fixes for light theme */
+            .stMarkdown, .stText, .stSubheader, .stHeader, .stTitle, .stCaption {{
+                color: #333333 !important;
+                font-weight: 500 !important;
+            }}
+            
+            .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {{
+                color: #333333 !important;
+                font-weight: bold !important;
+            }}
+            
+            .stMarkdown p, .stMarkdown span, .stMarkdown div {{
+                color: #333333 !important;
+            }}
+            
+            /* Additional comprehensive text visibility fixes for light theme */
+            div[data-testid="stMarkdown"] {{
+                color: #333333 !important;
+            }}
+            
+            div[data-testid="stMarkdown"] h1,
+            div[data-testid="stMarkdown"] h2,
+            div[data-testid="stMarkdown"] h3,
+            div[data-testid="stMarkdown"] h4,
+            div[data-testid="stMarkdown"] h5,
+            div[data-testid="stMarkdown"] h6 {{
+                color: #333333 !important;
+                font-weight: bold !important;
+            }}
+            
+            div[data-testid="stMarkdown"] p,
+            div[data-testid="stMarkdown"] span,
+            div[data-testid="stMarkdown"] div {{
+                color: #333333 !important;
+            }}
+            
+            /* Streamlit widget text visibility for light theme */
+            .stSelectbox, .stTextInput, .stNumberInput, .stSlider, .stCheckbox, .stRadio {{
+                color: #333333 !important;
+            }}
+            
+            .stSelectbox label, .stTextInput label, .stNumberInput label, .stSlider label, .stCheckbox label, .stRadio label {{
+                color: #333333 !important;
+                font-weight: 500 !important;
+            }}
+            
+            /* Tab text visibility for light theme */
+            .stTabs [data-baseweb="tab-list"] {{
+                color: #333333 !important;
+            }}
+            
+            .stTabs [data-baseweb="tab"] {{
+                color: #333333 !important;
+            }}
+            
+            .stTabs [data-baseweb="tab"] span {{
+                color: #333333 !important;
+            }}
+            
+            /* Sidebar text visibility for light theme */
+            .css-1d391kg {{
+                color: #333333 !important;
+            }}
+            
+            .css-1d391kg label {{
+                color: #333333 !important;
+            }}
+            
+            /* Enhanced sidebar text visibility for light theme */
+            .css-1d391kg, .css-1d391kg * {{
+                color: #333333 !important;
+            }}
+            
+            /* Specific sidebar element overrides */
+            .css-1d391kg .stSelectbox label,
+            .css-1d391kg .stTextInput label,
+            .css-1d391kg .stCheckbox label,
+            .css-1d391kg .stRadio label {{
+                color: #333333 !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Sidebar section headers */
+            .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg h4, .css-1d391kg h5, .css-1d391kg h6 {{
+                color: #333333 !important;
+                font-weight: bold !important;
+            }}
+            
+            /* Sidebar text elements */
+            .css-1d391kg p, .css-1d391kg span, .css-1d391kg div {{
+                color: #333333 !important;
+            }}
+            
+            /* Force all sidebar text to be dark */
+            .css-1d391kg, .css-1d391kg *, .css-1d391kg label, .css-1d391kg p, .css-1d391kg span, .css-1d391kg div {{
+                color: #333333 !important;
+            }}
+            
+            /* Additional sidebar selectors for light theme */
+            [data-testid="stSidebar"] {{
+                color: #333333 !important;
+            }}
+            
+            [data-testid="stSidebar"] * {{
+                color: #333333 !important;
+            }}
+            
+            [data-testid="stSidebar"] label {{
+                color: #333333 !important;
+                font-weight: 600 !important;
+            }}
+            
+            [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] h5, [data-testid="stSidebar"] h6 {{
+                color: #333333 !important;
+                font-weight: bold !important;
+            }}
+            
+            /* Target sidebar widgets specifically */
+            [data-testid="stSidebar"] .stSelectbox label,
+            [data-testid="stSidebar"] .stTextInput label,
+            [data-testid="stSidebar"] .stCheckbox label,
+            [data-testid="stSidebar"] .stRadio label {{
+                color: #333333 !important;
+                font-weight: 600 !important;
+            }}
+            
+            /* Universal text visibility override for light theme */
+            body, html, div, span, p, h1, h2, h3, h4, h5, h6, label, text {{
+                color: #333333 !important;
+            }}
+            
+            /* Chart container text for light theme */
+            .element-container {{
+                color: #333333 !important;
+            }}
+            
+            .element-container div {{
+                color: #333333 !important;
+            }}
+            
+            /* Streamlit specific containers for light theme */
+            .block-container {{
+                color: #333333 !important;
+            }}
+            
+            .block-container div {{
+                color: #333333 !important;
+            }}
+            
+            /* Force all text to be dark in light theme */
+            * {{
+                color: #333333 !important;
+            }}
+            
+            /* Specific overrides for chart titles and labels in light theme */
+            .js-plotly-plot .plotly .gtitle text,
+            .js-plotly-plot .plotly .g-gtitle text,
+            .js-plotly-plot .plotly .g-xtitle text,
+            .js-plotly-plot .plotly .g-ytitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+                font-weight: bold !important;
+            }}
+            
+            /* Ensure all plotly text elements are visible in light theme */
+            .js-plotly-plot .plotly .main-svg text,
+            .js-plotly-plot .plotly .legend text,
+            .js-plotly-plot .plotly .g-xtick text,
+            .js-plotly-plot .plotly .g-ytick text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Additional specific rules for chart titles in light theme */
+            .js-plotly-plot .plotly .gtitle, .js-plotly-plot .plotly .g-gtitle {{
+                color: #333333 !important;
+            }}
+            
+            .js-plotly-plot .plotly .gtitle text, .js-plotly-plot .plotly .g-gtitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }}
+            
+            /* Force all SVG text elements to be visible in light theme */
+            .js-plotly-plot .plotly svg text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Specific override for chart titles */
+            .js-plotly-plot .plotly .gtitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }}
+            
+            /* Override for any white text in charts */
+            .js-plotly-plot .plotly text[fill="white"], .js-plotly-plot .plotly text[fill="#ffffff"] {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Force all text in plotly containers to be dark */
+            .element-container .js-plotly-plot .plotly text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Additional override for chart titles with higher specificity */
+            .element-container .js-plotly-plot .plotly .gtitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+                font-weight: bold !important;
+                font-size: 16px !important;
+            }}
+            
+            /* Force all chart axis labels to be visible in light theme */
+            .js-plotly-plot .plotly .g-xtitle text, .js-plotly-plot .plotly .g-ytitle text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+                font-weight: bold !important;
+                font-size: 14px !important;
+            }}
+            
+            /* Force all chart tick labels to be visible */
+            .js-plotly-plot .plotly .g-xtick text, .js-plotly-plot .plotly .g-ytick text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+                font-size: 12px !important;
+            }}
+            
+            /* Force legend text to be visible */
+            .js-plotly-plot .plotly .legend text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+                font-size: 12px !important;
+            }}
+            
+            /* Force all text in plotly charts to be dark */
+            .js-plotly-plot .plotly text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Specific override for any white or light colored text */
+            .js-plotly-plot .plotly text[fill="white"], 
+            .js-plotly-plot .plotly text[fill="#ffffff"],
+            .js-plotly-plot .plotly text[fill="lightgray"],
+            .js-plotly-plot .plotly text[fill="#d3d3d3"] {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
+            
+            /* Force all text in chart containers to be dark */
+            .element-container .js-plotly-plot .plotly text,
+            .element-container .js-plotly-plot .plotly .gtitle text,
+            .element-container .js-plotly-plot .plotly .g-xtitle text,
+            .element-container .js-plotly-plot .plotly .g-ytitle text,
+            .element-container .js-plotly-plot .plotly .g-xtick text,
+            .element-container .js-plotly-plot .plotly .g-ytick text,
+            .element-container .js-plotly-plot .plotly .legend text {{
+                fill: #333333 !important;
+                color: #333333 !important;
+            }}
         </style>
         """, unsafe_allow_html=True)
     
@@ -2151,12 +3366,34 @@ def main():
                 st.session_state['modal_data'] = classes_data
             
             st.markdown(f"""
-            <div class="instrument-card {status_class}">
-                <div class="status-icon">{status_icon}</div>
-                <h3>{row['Instrument']}</h3>
-                <p><strong>Needed:</strong> {row['Needed']}</p>
-                <p><strong>Enrolled:</strong> {row['Enrolled']}</p>
-                <p><strong>Fill Rate:</strong> {row['Fill Rate']:.1f}%</p>
+            <div class="instrument-status-card {status_class}">
+                <div class="card-header">
+                    <div class="status-indicator">
+                        <span class="status-icon">{status_icon}</span>
+                    </div>
+                    <h3 class="instrument-title">{row['Instrument']}</h3>
+                </div>
+                <div class="card-content">
+                    <div class="metric-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Needed</span>
+                            <span class="metric-value needed">{row['Needed']}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Enrolled</span>
+                            <span class="metric-value enrolled">{row['Enrolled']}</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Fill Rate</span>
+                            <span class="metric-value fill-rate">{row['Fill Rate']:.1f}%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="classes-count">
+                        {len(classes_data)} classes available
+                    </div>
+                </div>
             </div>
             """, unsafe_allow_html=True)
     
@@ -2230,15 +3467,37 @@ def main():
         # Count classes in each category
         enrollment_counts = filtered_df['enrollment_category'].value_counts()
         
-        # Create pie chart
+        # Create detailed data for tooltips
+        enrollment_details = []
+        for category in enrollment_counts.index:
+            category_classes = filtered_df[filtered_df['enrollment_category'] == category]
+            total_classes = len(category_classes)
+            total_seats = category_classes['secInstrumentation_seatscap'].sum()
+            total_enrolled = category_classes['secInstrumentation_activestucount'].sum()
+            avg_enrollment = category_classes['enrollment_rate'].mean()
+            
+            enrollment_details.append({
+                'Category': category,
+                'Classes': total_classes,
+                'Total Seats': total_seats,
+                'Total Enrolled': total_enrolled,
+                'Avg Enrollment Rate': avg_enrollment,
+                'Percentage': (total_classes / len(filtered_df)) * 100
+            })
+        
+        enrollment_details_df = pd.DataFrame(enrollment_details)
+        
+        # Create pie chart with enhanced tooltips
         fig_enrollment = px.pie(
-            values=enrollment_counts.values,
-            names=enrollment_counts.index,
+            enrollment_details_df,
+            values='Classes',
+            names='Category',
             title="Enrollment Rate Distribution",
-            color_discrete_sequence=px.colors.qualitative.Set3
+            color_discrete_sequence=px.colors.qualitative.Set3,
+            hover_data=['Total Seats', 'Total Enrolled', 'Avg Enrollment Rate', 'Percentage']
         )
         
-        # Update layout for better appearance
+        # Update layout for better appearance and enhanced tooltips
         fig_enrollment.update_layout(
             showlegend=True,
             legend=dict(
@@ -2247,27 +3506,122 @@ def main():
                 y=1,
                 xanchor="left",
                 x=1.02
+            ),
+            hoverlabel=dict(
+                bgcolor="rgba(255, 255, 255, 0.95)",
+                font_size=12,
+                font_family="Arial",
+                bordercolor="rgba(0, 0, 0, 0.1)"
+            ),
+            font=dict(
+                color="#333333" if theme_mode == "Light" else "#ffffff"
+            ),
+            title=dict(
+                font=dict(
+                    color="#333333" if theme_mode == "Light" else "#ffffff",
+                    size=16,
+                    family="Arial"
+                )
             )
         )
         
-        # Add percentage labels
+        # Add percentage labels and enhanced tooltips
         fig_enrollment.update_traces(
             textposition='inside',
             textinfo='percent+label',
-            textfont_size=12
+            textfont_size=12,
+            hovertemplate="<b>%{label}</b><br>" +
+                         "Classes: %{value}<br>" +
+                         "Total Seats: %{customdata[0]:,.0f}<br>" +
+                         "Total Enrolled: %{customdata[1]:,.0f}<br>" +
+                         "Avg Enrollment Rate: %{customdata[2]:.1f}%<br>" +
+                         "Percentage of Total: %{customdata[3]:.1f}%<br>" +
+                         "<extra></extra>"
         )
         
         st.plotly_chart(fig_enrollment, use_container_width=True)
     
     with col2:
-        # Instrument needs chart
+        # Instrument needs chart with enhanced tooltips
+        # Prepare detailed data for instrument chart
+        instrument_details = []
+        for _, row in instrument_df.iterrows():
+            instrument = row['Instrument']
+            needed = row['Needed']
+            enrolled = row['Enrolled']
+            fill_rate = row['Fill Rate']
+            
+            # Get classes for this instrument
+            instrument_classes = filtered_df[filtered_df[f'{instrument}_needed'] > 0]
+            total_classes = len(instrument_classes)
+            total_seats = instrument_classes['secInstrumentation_seatscap'].sum()
+            avg_enrollment = instrument_classes['enrollment_rate'].mean()
+            
+            instrument_details.append({
+                'Instrument': instrument,
+                'Needed': needed,
+                'Enrolled': enrolled,
+                'Fill Rate': fill_rate,
+                'Total Classes': total_classes,
+                'Total Seats': total_seats,
+                'Avg Enrollment Rate': avg_enrollment,
+                'Shortage': max(0, needed - enrolled),
+                'Surplus': max(0, enrolled - needed)
+            })
+        
+        instrument_details_df = pd.DataFrame(instrument_details)
+        
+        # Create bar chart with enhanced tooltips
         fig_instruments = px.bar(
-            instrument_df,
+            instrument_details_df,
             x='Instrument',
             y=['Needed', 'Enrolled'],
             title="Instrument Needs vs Enrolled",
-            barmode='group'
+            barmode='group',
+            hover_data=['Fill Rate', 'Total Classes', 'Total Seats', 'Avg Enrollment Rate', 'Shortage', 'Surplus']
         )
+        
+        # Update layout and tooltips
+        fig_instruments.update_layout(
+            hoverlabel=dict(
+                bgcolor="rgba(255, 255, 255, 0.95)",
+                font_size=12,
+                font_family="Arial",
+                bordercolor="rgba(0, 0, 0, 0.1)"
+            ),
+            legend=dict(
+                title="Category",
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=1.02
+            ),
+            font=dict(
+                color="#333333" if theme_mode == "Light" else "#ffffff"
+            ),
+            title=dict(
+                font=dict(
+                    color="#333333" if theme_mode == "Light" else "#ffffff",
+                    size=16,
+                    family="Arial"
+                )
+            )
+        )
+        
+        # Enhanced tooltips for instrument chart
+        fig_instruments.update_traces(
+            hovertemplate="<b>%{x}</b><br>" +
+                         "Category: %{fullData.name}<br>" +
+                         "Count: %{y}<br>" +
+                         "Fill Rate: %{customdata[0]:.1f}%<br>" +
+                         "Total Classes: %{customdata[1]}<br>" +
+                         "Total Seats: %{customdata[2]:,.0f}<br>" +
+                         "Avg Enrollment Rate: %{customdata[3]:.1f}%<br>" +
+                         "Shortage: %{customdata[4]}<br>" +
+                         "Surplus: %{customdata[5]}<br>" +
+                         "<extra></extra>"
+        )
+        
         st.plotly_chart(fig_instruments, use_container_width=True)
     
     # Additional Analytics Charts
@@ -2277,12 +3631,20 @@ def main():
     col3, col4 = st.columns(2)
     
     with col3:
-        # Ensemble Performance by Style
+        # Ensemble Performance by Style with enhanced tooltips
         style_performance = filtered_df.groupby('style').agg({
-            'enrollment_rate': 'mean',
-            'secInstrumentation_sectionname': 'count'
+            'enrollment_rate': ['mean', 'count', 'sum'],
+            'secInstrumentation_seatscap': 'sum',
+            'secInstrumentation_activestucount': 'sum',
+            'open_seats': 'sum'
         }).reset_index()
-        style_performance.columns = ['Style', 'Avg Enrollment Rate (%)', 'Number of Classes']
+        
+        # Flatten column names
+        style_performance.columns = ['Style', 'Avg Enrollment Rate (%)', 'Number of Classes', 'Total Enrollment Rate', 'Total Seats', 'Total Enrolled', 'Total Open Seats']
+        
+        # Calculate additional metrics
+        style_performance['Fill Rate (%)'] = (style_performance['Total Enrolled'] / style_performance['Total Seats'] * 100).round(1)
+        style_performance['Utilization Rate (%)'] = ((style_performance['Total Seats'] - style_performance['Total Open Seats']) / style_performance['Total Seats'] * 100).round(1)
         
         fig_style = px.bar(
             style_performance,
@@ -2290,13 +3652,47 @@ def main():
             y='Avg Enrollment Rate (%)',
             title="Average Enrollment Rate by Style",
             color='Avg Enrollment Rate (%)',
-            color_continuous_scale='RdYlGn'
+            color_continuous_scale='RdYlGn',
+            hover_data=['Number of Classes', 'Total Seats', 'Total Enrolled', 'Total Open Seats', 'Fill Rate (%)', 'Utilization Rate (%)']
         )
-        fig_style.update_layout(showlegend=False)
+        
+        fig_style.update_layout(
+            showlegend=False,
+            hoverlabel=dict(
+                bgcolor="rgba(255, 255, 255, 0.95)",
+                font_size=12,
+                font_family="Arial",
+                bordercolor="rgba(0, 0, 0, 0.1)"
+            ),
+            font=dict(
+                color="#f2e9e9" if theme_mode == "Light" else "#ffffff"
+            ),
+            title=dict(
+                font=dict(
+                    color="#f2e9e9" if theme_mode == "Light" else "#ffffff",
+                    size=16,
+                    family="Arial"
+                )
+            )
+        )
+        
+        # Enhanced tooltips for style chart
+        fig_style.update_traces(
+            hovertemplate="<b>%{x}</b><br>" +
+                         "Avg Enrollment Rate: %{y:.1f}%<br>" +
+                         "Number of Classes: %{customdata[0]}<br>" +
+                         "Total Seats: %{customdata[1]:,.0f}<br>" +
+                         "Total Enrolled: %{customdata[2]:,.0f}<br>" +
+                         "Total Open Seats: %{customdata[3]:,.0f}<br>" +
+                         "Fill Rate: %{customdata[4]:.1f}%<br>" +
+                         "Utilization Rate: %{customdata[5]:.1f}%<br>" +
+                         "<extra></extra>"
+        )
+        
         st.plotly_chart(fig_style, use_container_width=True)
     
     with col4:
-        # Time Slot Analysis
+        # Time Slot Analysis with enhanced tooltips
         def extract_time_slot(time_str):
             if isinstance(time_str, list) and len(time_str) > 0:
                 time = time_str[0]
@@ -2311,10 +3707,18 @@ def main():
         
         filtered_df['time_slot'] = filtered_df['bSinCsmStartTime'].apply(extract_time_slot)
         time_analysis = filtered_df.groupby('time_slot').agg({
-            'enrollment_rate': 'mean',
-            'secInstrumentation_sectionname': 'count'
+            'enrollment_rate': ['mean', 'count', 'sum'],
+            'secInstrumentation_seatscap': 'sum',
+            'secInstrumentation_activestucount': 'sum',
+            'open_seats': 'sum'
         }).reset_index()
-        time_analysis.columns = ['Time Slot', 'Avg Enrollment Rate (%)', 'Number of Classes']
+        
+        # Flatten column names
+        time_analysis.columns = ['Time Slot', 'Avg Enrollment Rate (%)', 'Number of Classes', 'Total Enrollment Rate', 'Total Seats', 'Total Enrolled', 'Total Open Seats']
+        
+        # Calculate additional metrics
+        time_analysis['Fill Rate (%)'] = (time_analysis['Total Enrolled'] / time_analysis['Total Seats'] * 100).round(1)
+        time_analysis['Utilization Rate (%)'] = ((time_analysis['Total Seats'] - time_analysis['Total Open Seats']) / time_analysis['Total Seats'] * 100).round(1)
         
         fig_time = px.bar(
             time_analysis,
@@ -2322,12 +3726,46 @@ def main():
             y='Avg Enrollment Rate (%)',
             title="Average Enrollment Rate by Time Slot",
             color='Avg Enrollment Rate (%)',
-            color_continuous_scale='Blues'
+            color_continuous_scale='Blues',
+            hover_data=['Number of Classes', 'Total Seats', 'Total Enrolled', 'Total Open Seats', 'Fill Rate (%)', 'Utilization Rate (%)']
         )
-        fig_time.update_layout(showlegend=False)
+        
+        fig_time.update_layout(
+            showlegend=False,
+            hoverlabel=dict(
+                bgcolor="rgba(255, 255, 255, 0.95)",
+                font_size=12,
+                font_family="Arial",
+                bordercolor="rgba(255, 255, 255, 0.95)"
+            ),
+            font=dict(
+                color="#333333" if theme_mode == "Light" else "#ffffff"
+            ),
+            title=dict(
+                font=dict(
+                    color="#333333" if theme_mode == "Light" else "#ffffff",
+                    size=16,
+                    family="Arial"
+                )
+            )
+        )
+        
+        # Enhanced tooltips for time chart
+        fig_time.update_traces(
+            hovertemplate="<b>%{x}</b><br>" +
+                         "Avg Enrollment Rate: %{y:.1f}%<br>" +
+                         "Number of Classes: %{customdata[0]}<br>" +
+                         "Total Seats: %{customdata[1]:,.0f}<br>" +
+                         "Total Enrolled: %{customdata[2]:,.0f}<br>" +
+                         "Total Open Seats: %{customdata[3]:,.0f}<br>" +
+                         "Fill Rate: %{customdata[4]:.1f}%<br>" +
+                         "Utilization Rate: %{customdata[5]:.1f}%<br>" +
+                         "<extra></extra>"
+        )
+        
         st.plotly_chart(fig_time, use_container_width=True)
     
-    # Faculty Workload Analysis
+    # Faculty Workload Analysis with enhanced tooltips
     st.subheader("Faculty Workload Analysis")
     
     # Extract faculty names and analyze their workload
@@ -2339,47 +3777,85 @@ def main():
                     'Faculty': faculty,
                     'Enrollment Rate': ensemble['enrollment_rate'],
                     'Class': ensemble['secInstrumentation_sectionname'],
-                    'Style': ensemble['style']
+                    'Style': ensemble['style'],
+                    'Total Seats': ensemble['secInstrumentation_seatscap'],
+                    'Enrolled Students': ensemble['secInstrumentation_activestucount'],
+                    'Open Seats': ensemble['open_seats'],
+                    'Time Slot': extract_time_slot(ensemble['bSinCsmStartTime'])
                 })
     
     if faculty_data:
         faculty_df = pd.DataFrame(faculty_data)
-        faculty_summary = faculty_df.groupby('Faculty').agg({
-            'Enrollment Rate': 'mean',
-            'Class': 'count'
-        }).reset_index()
-        faculty_summary.columns = ['Faculty', 'Avg Enrollment Rate (%)', 'Number of Classes']
         
-        # Create faculty workload chart
+        # Faculty performance summary
+        faculty_summary = faculty_df.groupby('Faculty').agg({
+            'Enrollment Rate': ['mean', 'count'],
+            'Total Seats': 'sum',
+            'Enrolled Students': 'sum',
+            'Open Seats': 'sum',
+            'Style': lambda x: ', '.join(x.unique()),
+            'Time Slot': lambda x: ', '.join(x.unique())
+        }).reset_index()
+        
+        # Flatten column names
+        faculty_summary.columns = ['Faculty', 'Avg Enrollment Rate (%)', 'Number of Classes', 'Total Seats', 'Total Enrolled', 'Total Open Seats', 'Styles Taught', 'Time Slots']
+        
+        # Calculate additional metrics
+        faculty_summary['Fill Rate (%)'] = (faculty_summary['Total Enrolled'] / faculty_summary['Total Seats'] * 100).round(1)
+        faculty_summary['Utilization Rate (%)'] = ((faculty_summary['Total Seats'] - faculty_summary['Total Open Seats']) / faculty_summary['Total Seats'] * 100).round(1)
+        faculty_summary['Workload Score'] = (faculty_summary['Number of Classes'] * faculty_summary['Avg Enrollment Rate (%)'] / 100).round(1)
+        
+        # Create faculty performance chart
         fig_faculty = px.scatter(
             faculty_summary,
             x='Number of Classes',
             y='Avg Enrollment Rate (%)',
-            size='Number of Classes',
-            color='Avg Enrollment Rate (%)',
-            hover_name='Faculty',
-            title="Faculty Workload vs Performance",
+            size='Total Seats',
+            color='Fill Rate (%)',
+            title="Faculty Performance Analysis",
+            hover_data=['Faculty', 'Total Enrolled', 'Total Open Seats', 'Styles Taught', 'Time Slots', 'Workload Score', 'Utilization Rate (%)'],
             color_continuous_scale='RdYlGn',
-            size_max=20
+            size_max=50
         )
         
-        # Add trend line
-        fig_faculty.add_trace(
-            px.scatter(faculty_summary, x='Number of Classes', y='Avg Enrollment Rate (%)').data[0]
+        fig_faculty.update_layout(
+            hoverlabel=dict(
+                bgcolor="rgba(255, 255, 255, 0.95)",
+                font_size=12,
+                font_family="Arial",
+                bordercolor="rgba(0, 0, 0, 0.1)"
+            ),
+            xaxis_title="Number of Classes Taught",
+            yaxis_title="Average Enrollment Rate (%)",
+            font=dict(
+                color="#333333" if theme_mode == "Light" else "#ffffff"
+            ),
+            title=dict(
+                font=dict(
+                    color="#333333" if theme_mode == "Light" else "#ffffff",
+                    size=16,
+                    family="Arial"
+                )
+            )
+        )
+        
+        # Enhanced tooltips for faculty chart
+        fig_faculty.update_traces(
+            hovertemplate="<b>%{customdata[0]}</b><br>" +
+                         "Classes: %{x}<br>" +
+                         "Avg Enrollment Rate: %{y:.1f}%<br>" +
+                         "Total Seats: %{marker.size}<br>" +
+                         "Fill Rate: %{marker.color:.1f}%<br>" +
+                         "Total Enrolled: %{customdata[1]:,.0f}<br>" +
+                         "Total Open Seats: %{customdata[2]:,.0f}<br>" +
+                         "Styles: %{customdata[3]}<br>" +
+                         "Time Slots: %{customdata[4]}<br>" +
+                         "Workload Score: %{customdata[5]}<br>" +
+                         "Utilization Rate: %{customdata[6]:.1f}%<br>" +
+                         "<extra></extra>"
         )
         
         st.plotly_chart(fig_faculty, use_container_width=True)
-        
-        # Faculty details table
-        st.markdown("**Faculty Performance Details:**")
-        faculty_display = faculty_summary.sort_values('Avg Enrollment Rate (%)', ascending=False)
-        st.dataframe(
-            faculty_display,
-            use_container_width=True,
-            hide_index=True
-        )
-    else:
-        st.info("No faculty data available for analysis.")
     
     # Ensemble details table
     st.subheader("📋 Ensemble Details")
