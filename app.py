@@ -957,14 +957,14 @@ def main():
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             }}
             
-            .header-content {
+            .header-content {{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 0 2rem;
-            }
+            }}
             
             .main-header {{
                 font-size: 2.8rem;
@@ -1018,18 +1018,18 @@ def main():
             }}
             
             /* Class List Styles */
-            .class-list {
+            .class-list {{
                 display: grid;
                 gap: 1rem;
-            }
+            }}
             
-            .class-item {
+            .class-item {{
                 background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
                 border: 1px solid #718096;
                 border-radius: 0.75rem;
                 padding: 1.5rem;
                 transition: all 0.3s ease;
-            }
+            }}
             
             .class-item:hover {{
                 transform: translateY(-2px);
@@ -1037,63 +1037,63 @@ def main():
                 border-color: {colors['primary']};
             }}
             
-            .class-header {
+            .class-header {{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 margin-bottom: 1rem;
-            }
+            }}
             
-            .class-name {
+            .class-name {{
                 font-size: 1.2rem;
                 font-weight: 700;
                 color: #ffffff;
-            }
+            }}
             
-            .class-status {
+            .class-status {{
                 padding: 0.25rem 0.75rem;
                 border-radius: 1rem;
                 font-size: 0.8rem;
                 font-weight: 600;
-            }
+            }}
             
-            .status-needed {
+            .status-needed {{
                 background: #742a2a;
                 color: #fed7d7;
-            }
+            }}
             
-            .status-filled {
+            .status-filled {{
                 background: #22543d;
                 color: #9ae6b4;
-            }
+            }}
             
-            .class-details {
+            .class-details {{
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 1rem;
                 font-size: 0.9rem;
-            }
+            }}
             
-            .detail-item {
+            .detail-item {{
                 display: flex;
                 flex-direction: column;
                 gap: 0.25rem;
-            }
+            }}
             
-            .detail-label {
+            .detail-label {{
                 color: #a0aec0;
                 font-weight: 600;
                 font-size: 0.8rem;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-            }
+            }}
             
-            .detail-value {
+            .detail-value {{
                 color: #ffffff;
                 font-weight: 500;
-            }
+            }}
             
-            .metric-card {
+            .metric-card {{
                 background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
                 color: #ffffff;
                 padding: 2.5rem;
@@ -1105,9 +1105,9 @@ def main():
                 transition: all 0.4s ease;
                 position: relative;
                 overflow: hidden;
-            }
+            }}
             
-            .metric-card::before {
+            .metric-card::before {{
                 content: '';
                 position: absolute;
                 top: 0;
@@ -1115,33 +1115,33 @@ def main():
                 right: 0;
                 height: 4px;
                 background: linear-gradient(90deg, #4a9eff, #63b3ed);
-            }
+            }}
             
-            .metric-card:hover {
+            .metric-card:hover {{
                 transform: translateY(-5px);
                 box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
                 border-color: #4a9eff;
-            }
+            }}
             
-            .danger {
+            .danger {{
                 background-color: #742a2a;
                 border-color: #f56565;
                 color: #fed7d7;
-            }
+            }}
             
-            .warning {
+            .warning {{
                 background-color: #744210;
                 border-color: #ed8936;
                 color: #fbd38d;
-            }
+            }}
             
-            .success {
+            .success {{
                 background-color: #22543d;
                 border-color: #48bb78;
                 color: #9ae6b4;
-            }
+            }}
             
-            .info-box {
+            .info-box {{
                 background: linear-gradient(135deg, #2a4365 0%, #1a365d 100%);
                 color: #ffffff;
                 padding: 2rem;
@@ -1153,9 +1153,9 @@ def main():
                 position: relative;
                 transition: all 0.4s ease;
                 overflow: hidden;
-            }
+            }}
             
-            .info-box::before {
+            .info-box::before {{
                 content: '';
                 position: absolute;
                 top: 0;
@@ -1163,15 +1163,15 @@ def main():
                 width: 6px;
                 height: 100%;
                 background: linear-gradient(180deg, #4a9eff, #63b3ed);
-            }
+            }}
             
-            .info-box:hover {
+            .info-box:hover {{
                 transform: translateY(-3px);
                 box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
                 border-color: #4a9eff;
-            }
+            }}
             
-            .instrument-card {
+            .instrument-card {{
                 background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
                 color: #ffffff;
                 padding: 2.5rem;
@@ -1187,9 +1187,9 @@ def main():
                 transition: all 0.4s ease;
                 position: relative;
                 overflow: hidden;
-            }
+            }}
             
-            .instrument-card::before {
+            .instrument-card::before {{
                 content: '';
                 position: absolute;
                 top: 0;
@@ -1197,356 +1197,356 @@ def main():
                 right: 0;
                 height: 4px;
                 background: linear-gradient(90deg, #4a9eff, #63b3ed);
-            }
+            }}
             
-            .instrument-card:hover {
+            .instrument-card:hover {{
                 transform: translateY(-5px);
                 box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
                 border-color: #4a9eff;
-            }
+            }}
             
-            .instrument-card h3 {
+            .instrument-card h3 {{
                 margin: 0 0 1rem 0;
                 font-size: 1.5rem;
                 font-weight: bold;
                 color: #ffffff;
-            }
+            }}
             
-            .instrument-card p {
+            .instrument-card p {{
                 margin: 0.25rem 0;
                 font-size: 1rem;
                 color: #e2e8f0;
-            }
+            }}
             
-            .instrument-card.danger {
+            .instrument-card.danger {{
                 background-color: #742a2a;
                 border-color: #f56565;
                 color: #fed7d7;
-            }
+            }}
             
-            .instrument-card.warning {
+            .instrument-card.warning {{
                 background-color: #744210;
                 border-color: #ed8936;
                 color: #fbd38d;
-            }
+            }}
             
-            .instrument-card.success {
+            .instrument-card.success {{
                 background-color: #22543d;
                 border-color: #48bb78;
                 color: #9ae6b4;
-            }
+            }}
             
-            .status-icon {
+            .status-icon {{
                 font-size: 2rem;
                 margin-bottom: 0.5rem;
-            }
+            }}
             
             /* Dark theme for Streamlit elements */
-            .stSelectbox > div > div {
+            .stSelectbox > div > div {{
                 background-color: #2d3748 !important;
                 color: #ffffff !important;
-            }
+            }}
             
-            .stTextInput > div > div > input {
+            .stTextInput > div > div > input {{
                 background-color: #2d3748 !important;
                 color: #ffffff !important;
                 border-color: #4a5568 !important;
-            }
+            }}
             
             /* Dark theme for text input labels */
-            .stTextInput label {
+            .stTextInput label {{
                 color: #ffffff !important;
                 font-weight: bold !important;
                 font-size: 1rem !important;
                 margin-bottom: 0.5rem !important;
                 display: block !important;
-            }
+            }}
             
-            .stDataFrame {
+            .stDataFrame {{
                 background-color: #2d3748 !important;
                 color: #ffffff !important;
-            }
+            }}
             
                     /* Dark theme for tabs */
-        .stTabs [data-baseweb="tab-list"] {
+        .stTabs [data-baseweb="tab-list"] {{
             background-color: #2d3748 !important;
-        }
+        }}
         
-        .stTabs [data-baseweb="tab"] {
+        .stTabs [data-baseweb="tab"] {{
             background-color: #4a5568 !important;
             color: #ffffff !important;
-        }
+        }}
         
-        .stTabs [aria-selected="true"] {
+        .stTabs [aria-selected="true"] {{
             background-color: #4a9eff !important;
             color: #ffffff !important;
-        }
+        }}
         
         /* Custom class for red numbers in dark theme */
-        .red-number {
+        .red-number {{
             color: #ff0000 !important;
             font-weight: bold !important;
-        }
+        }}
         
         /* Faculty card styling for dark theme */
-        .faculty-card {
+        .faculty-card {{
             background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%) !important;
             border: 2px solid #4a5568 !important;
             border-radius: 1rem !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-        }
+        }}
         
-        .faculty-card:hover {
+        .faculty-card:hover {{
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
             border-color: #4a9eff !important;
-        }
+        }}
         
 
             
             /* Dark theme for buttons */
-            .stButton > button {
+            .stButton > button {{
                 background-color: #4a9eff !important;
                 color: #ffffff !important;
                 border-color: #4a9eff !important;
-            }
+            }}
             
-            .stButton > button:hover {
+            .stButton > button:hover {{
                 background-color: #3182ce !important;
-            }
+            }}
             
             /* Dark theme for sidebar */
-            .css-1d391kg {
+            .css-1d391kg {{
                 background-color: #1a202c !important;
-            }
+            }}
             
             /* Dark theme for main content */
-            .main .block-container {
+            .main .block-container {{
                 background-color: #1a1a1a !important;
-            }
+            }}
             
                     /* Dark theme for text elements */
-        .stMarkdown {
+        .stMarkdown {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for success/error messages */
-        .stAlert {
+        .stAlert {{
             background-color: #2d3748 !important;
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for success messages specifically */
-        .stAlert[data-baseweb="notification"] {
+        .stAlert[data-baseweb="notification"] {{
             background-color: #22543d !important;
             color: #9ae6b4 !important;
             border-color: #48bb78 !important;
-        }
+        }}
         
         /* Dark theme for all success messages - more specific */
-        .stAlert, .stAlert * {
+        .stAlert, .stAlert * {{
             color: #9ae6b4 !important;
-        }
+        }}
         
         /* Dark theme for success message text specifically */
-        .stAlert div, .stAlert span, .stAlert p {
+        .stAlert div, .stAlert span, .stAlert p {{
             color: #9ae6b4 !important;
-        }
+        }}
         
                     /* Dark theme for all text elements - comprehensive coverage */
-        .stText, .stMarkdown, .stSubheader, .stHeader, .stTitle, .stCaption {
+        .stText, .stMarkdown, .stSubheader, .stHeader, .stTitle, .stCaption {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for all heading elements */
-        h1, h2, h3, h4, h5, h6 {
+        h1, h2, h3, h4, h5, h6 {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for Streamlit headings */
-        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
+        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for sidebar text */
-        .css-1d391kg .stMarkdown {
+        .css-1d391kg .stMarkdown {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for all paragraph and span elements */
-        p, span, div {
+        p, span, div {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for Streamlit specific text elements */
-        .stMarkdown p, .stMarkdown span, .stMarkdown div {
+        .stMarkdown p, .stMarkdown span, .stMarkdown div {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for sidebar headings and text */
-        .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg p, .css-1d391kg span {
+        .css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3, .css-1d391kg p, .css-1d391kg span {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for main content text */
-        .main .block-container p, .main .block-container span, .main .block-container div {
+        .main .block-container p, .main .block-container span, .main .block-container div {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for all Streamlit text widgets */
-        .stTextInput label, .stSelectbox label, .stCheckbox label, .stRadio label {
+        .stTextInput label, .stSelectbox label, .stCheckbox label, .stRadio label {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for file uploader text */
-        .stFileUploader label, .stFileUploader p {
+        .stFileUploader label, .stFileUploader p {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for button text */
-        .stButton button {
+        .stButton button {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for download button text */
-        .stDownloadButton button {
+        .stDownloadButton button {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for expander text */
-        .streamlit-expanderHeader {
+        .streamlit-expanderHeader {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for metric text */
-        .stMetric label, .stMetric div {
+        .stMetric label, .stMetric div {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for chart text */
-        .js-plotly-plot .plotly .main-svg text {
+        .js-plotly-plot .plotly .main-svg text {{
             fill: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for table text */
-        .stDataFrame th, .stDataFrame td {
+        .stDataFrame th, .stDataFrame td {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Dark theme for any remaining text elements */
-        * {
+        * {{
             color: #ffffff !important;
-        }
+        }}
         
         /* Exception for specific colored elements */
-        .danger, .warning, .success, .info-box, .instrument-card, .metric-card {
+        .danger, .warning, .success, .info-box, .instrument-card, .metric-card {{
             color: inherit !important;
-        }
+        }}
         
         /* Exception for faculty cards */
-        .faculty-card {
+        .faculty-card {{
             color: inherit !important;
-        }
+        }}
         
         /* Exception for status badges */
-        .status-needed, .status-filled, .class-status {
+        .status-needed, .status-filled, .class-status {{
             color: inherit !important;
-        }
+        }}
             
             /* Dark theme for critical alert headers */
-            .critical-alert-header {
+            .critical-alert-header {{
                 color: #f56565 !important;
                 font-weight: bold !important;
-            }
+            }}
             
             /* Dark theme for critical alerts section */
-            .critical-alerts-section {
+            .critical-alerts-section {{
                 color: #ffffff !important;
-            }
+            }}
             
-            .critical-alerts-section h3 {
+            .critical-alerts-section h3 {{
                 color: #f56565 !important;
-            }
+            }}
             
-            .critical-alerts-section .stMarkdown {
+            .critical-alerts-section .stMarkdown {{
                 color: #ffffff !important;
-            }
+            }}
             
             /* Dark theme for success messages in critical alerts section */
-            .critical-alerts-section .stAlert {
+            .critical-alerts-section .stAlert {{
                 background-color: #22543d !important;
                 color: #9ae6b4 !important;
                 border-color: #48bb78 !important;
-            }
+            }}
             
             /* Dark theme for success message text in critical alerts section - very specific */
             .critical-alerts-section .stAlert *,
             .critical-alerts-section .stAlert div,
             .critical-alerts-section .stAlert span,
-            .critical-alerts-section .stAlert p {
+            .critical-alerts-section .stAlert p {{
                 color: #9ae6b4 !important;
                 font-weight: bold !important;
-            }
+            }}
             
             /* Dark theme for custom success message */
-            .critical-alerts-section div[style*="background-color: #e8f5e8"] {
+            .critical-alerts-section div[style*="background-color: #e8f5e8"] {{
                 background-color: #22543d !important;
                 color: #9ae6b4 !important;
                 border-left-color: #48bb78 !important;
-            }
+            }}
             
             /* Dark theme for info messages */
-            .stAlert[data-baseweb="notification"][data-testid="stAlert"] {
+            .stAlert[data-baseweb="notification"][data-testid="stAlert"] {{
                 background-color: #2a4365 !important;
                 color: #ffffff !important;
                 border-color: #4a9eff !important;
-            }
+            }}
             
             /* Dark theme for warning messages */
-            .stAlert[data-baseweb="notification"] {
+            .stAlert[data-baseweb="notification"] {{
                 background-color: #744210 !important;
                 color: #fbd38d !important;
                 border-color: #ed8936 !important;
-            }
+            }}
             
             /* Dark theme for error messages */
-            .stAlert[data-baseweb="notification"] {
+            .stAlert[data-baseweb="notification"] {{
                 background-color: #742a2a !important;
                 color: #fed7d7 !important;
                 border-color: #f56565 !important;
-            }
+            }}
             
             /* Dark theme for all info boxes and containers */
-            .stMarkdown div[style*="background-color"] {
+            .stMarkdown div[style*="background-color"] {{
                 color: #ffffff !important;
-            }
+            }}
             
             /* Dark theme for any remaining text that might be hidden */
-            .stMarkdown strong, .stMarkdown b {
+            .stMarkdown strong, .stMarkdown b {{
                 color: #ffffff !important;
-            }
+            }}
             
             /* Dark theme for list items */
-            .stMarkdown ul li, .stMarkdown ol li {
+            .stMarkdown ul li, .stMarkdown ol li {{
                 color: #ffffff !important;
-            }
+            }}
             
             /* Dark theme for links */
-            .stMarkdown a {
+            .stMarkdown a {{
                 color: #4a9eff !important;
-            }
+            }}
             
             /* Dark theme for code blocks */
-            .stMarkdown code {
+            .stMarkdown code {{
                 background-color: #2d3748 !important;
                 color: #e2e8f0 !important;
-            }
+            }}
             
             /* Dark theme for blockquotes */
-            .stMarkdown blockquote {
+            .stMarkdown blockquote {{
                 border-left-color: #4a9eff !important;
                 color: #e2e8f0 !important;
-            }
+            }}
         </style>
         """, unsafe_allow_html=True)
     else:
@@ -1563,14 +1563,14 @@ def main():
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             }}
             
-            .header-content {
+            .header-content {{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 0 2rem;
-            }
+            }}
             
             .main-header {{
                 font-size: 2.8rem;
@@ -1624,160 +1624,160 @@ def main():
             }}
             
             /* Class List Styles */
-            .class-list {
+            .class-list {{
                 display: grid;
                 gap: 1rem;
-            }
+            }}
             
-            .class-item {
+            .class-item {{
                 background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
                 border: 1px solid #e0e0e0;
                 border-radius: 0.75rem;
                 padding: 1.5rem;
                 transition: all 0.3s ease;
-            }
+            }}
             
-            .class-item:hover {
+            .class-item:hover {{
                 transform: translateY(-2px);
                 box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-                border-color: #2196f3;
-            }
+                border-color: {colors['primary']};
+            }}
             
-            .class-header {
+            .class-header {{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 margin-bottom: 1rem;
-            }
+            }}
             
-            .class-name {
+            .class-name {{
                 font-size: 1.2rem;
                 font-weight: 700;
                 color: #333333;
-            }
+            }}
             
-            .class-status {
+            .class-status {{
                 padding: 0.25rem 0.75rem;
                 border-radius: 1rem;
                 font-size: 0.8rem;
                 font-weight: 600;
-            }
+            }}
             
-            .status-needed {
+            .status-needed {{
                 background: #ffebee;
                 color: #c62828;
-            }
+            }}
             
-            .status-filled {
+            .status-filled {{
                 background: #e8f5e8;
                 color: #2e7d32;
-            }
+            }}
             
-            .class-details {
+            .class-details {{
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 1rem;
                 font-size: 0.9rem;
-            }
+            }}
             
-            .detail-item {
+            .detail-item {{
                 display: flex;
                 flex-direction: column;
                 gap: 0.25rem;
-            }
+            }}
             
-            .detail-label {
+            .detail-label {{
                 color: #666666;
                 font-weight: 600;
                 font-size: 0.8rem;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-            }
+            }}
             
-            .detail-value {
+            .detail-value {{
                 color: #333333;
                 font-weight: 500;
-            }
+            }}
         
-        .metric-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            color: #000000;
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            border: 2px solid #e0e0e0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin: 2rem 0;
-            text-align: center;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
+            .metric-card {{
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                color: #000000;
+                padding: 2.5rem;
+                border-radius: 1.5rem;
+                border: 2px solid #e0e0e0;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                margin: 2rem 0;
+                text-align: center;
+                transition: all 0.4s ease;
+                position: relative;
+                overflow: hidden;
+            }}
         
-        .metric-card::before {
+        .metric-card::before {{
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #2196f3, #1976d2);
-        }
+            background: linear-gradient(90deg, {colors['primary']}, {colors['accent']});
+        }}
         
-        .metric-card:hover {
+        .metric-card:hover {{
             transform: translateY(-5px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-            border-color: #2196f3;
-        }
+            border-color: {colors['primary']};
+        }}
             
-            .danger {
+            .danger {{
                 background-color: #ffebee;
                 border-color: #f44336;
                 color: #c62828;
-            }
+            }}
             
-            .warning {
+            .warning {{
                 background-color: #fff3e0;
                 border-color: #ff9800;
                 color: #ef6c00;
-            }
+            }}
             
-            .success {
+            .success {{
                 background-color: #e8f5e8;
                 border-color: #4caf50;
                 color: #2e7d32;
-            }
+            }}
             
-        .info-box {
+        .info-box {{
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             color: #000000;
             padding: 2rem;
             border-radius: 1rem;
             margin: 2rem 0;
-            border-left: 6px solid #2196f3;
+            border-left: 6px solid {colors['primary']};
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             border: 2px solid #e0e0e0;
             position: relative;
             transition: all 0.4s ease;
             overflow: hidden;
-        }
+        }}
         
-        .info-box::before {
+        .info-box::before {{
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 6px;
             height: 100%;
-            background: linear-gradient(180deg, #2196f3, #1976d2);
-        }
+            background: linear-gradient(180deg, {colors['primary']}, {colors['accent']});
+        }}
         
-        .info-box:hover {
+        .info-box:hover {{
             transform: translateY(-3px);
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-            border-color: #2196f3;
-        }
+            border-color: {colors['primary']};
+        }}
         
-        .instrument-card {
+        .instrument-card {{
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             color: #000000;
             padding: 2.5rem;
@@ -1793,243 +1793,243 @@ def main():
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
-        }
+        }}
         
-        .instrument-card::before {
+        .instrument-card::before {{
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #2196f3, #1976d2);
-        }
+            background: linear-gradient(90deg, {colors['primary']}, {colors['accent']});
+        }}
         
-        .instrument-card:hover {
+        .instrument-card:hover {{
             transform: translateY(-5px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-            border-color: #2196f3;
-        }
+            border-color: {colors['primary']};
+        }}
         
-        .instrument-card h3 {
+        .instrument-card h3 {{
             margin: 0 0 1rem 0;
             font-size: 1.5rem;
             font-weight: bold;
-            color: #000000;
-        }
+            color: #333333;
+        }}
         
-        .instrument-card p {
+        .instrument-card p {{
             margin: 0.25rem 0;
             font-size: 1rem;
-            color: #000000;
-        }
+            color: #666666;
+        }}
             
-            .instrument-card.danger {
+            .instrument-card.danger {{
                 background-color: #ffebee;
                 border-color: #f44336;
                 color: #c62828;
-            }
+            }}
             
-            .instrument-card.warning {
+            .instrument-card.warning {{
                 background-color: #fff3e0;
                 border-color: #ff9800;
                 color: #ef6c00;
-            }
+            }}
             
-            .instrument-card.success {
+            .instrument-card.success {{
                 background-color: #e8f5e8;
                 border-color: #4caf50;
                 color: #2e7d32;
-            }
+            }}
             
-            .status-icon {
+            .status-icon {{
                 font-size: 2rem;
                 margin-bottom: 0.5rem;
-            }
+            }}
             
             /* Light theme for Streamlit elements */
-            .stSelectbox > div > div {
+            .stSelectbox > div > div {{
                 background-color: #ffffff !important;
                 color: #000000 !important;
-            }
+            }}
             
-            .stTextInput > div > div > input {
+            .stTextInput > div > div > input {{
                 background-color: #ffffff !important;
                 color: #000000 !important;
                 border-color: #e0e0e0 !important;
-            }
+            }}
             
             /* Light theme for text input labels */
-            .stTextInput label {
+            .stTextInput label {{
                 color: #000000 !important;
                 font-weight: bold !important;
                 font-size: 1rem !important;
                 margin-bottom: 0.5rem !important;
                 display: block !important;
-            }
+            }}
             
-            .stDataFrame {
+            .stDataFrame {{
                 background-color: #ffffff !important;
                 color: #000000 !important;
-            }
+            }}
             
                             /* Light theme for tabs */
-        .stTabs [data-baseweb="tab-list"] {
+        .stTabs [data-baseweb="tab-list"] {{
             background-color: #ffffff !important;
-        }
+        }}
         
-        .stTabs [data-baseweb="tab"] {
+        .stTabs [data-baseweb="tab"] {{
             background-color: #ffffff !important;
             color: #000000 !important;
-        }
+        }}
         
-        .stTabs [aria-selected="true"] {
+        .stTabs [aria-selected="true"] {{
             background-color: #1f77b4 !important;
             color: #ffffff !important;
-        }
+        }}
         
         /* Make numbers in tabs and headers red */
-        .stTabs [data-baseweb="tab"] {
+        .stTabs [data-baseweb="tab"] {{
             color: #000000 !important;
-        }
+        }}
         
         /* Custom class for red numbers */
-        .red-number {
+        .red-number {{
             color: #ff0000 !important;
             font-weight: bold !important;
-        }
+        }}
         
 
             
             /* Light theme for buttons */
-            .stButton > button {
+            .stButton > button {{
                 background-color: #1f77b4 !important;
                 color: #ffffff !important;
                 border-color: #1f77b4 !important;
-            }
+            }}
             
-            .stButton > button:hover {
+            .stButton > button:hover {{
                 background-color: #1565c0 !important;
-            }
+            }}
             
                     /* Light theme for sidebar */
-        .css-1d391kg {
+        .css-1d391kg {{
             background-color: #ffffff !important;
-        }
+        }}
         
         /* Light theme for app background */
-        .stApp {
+        .stApp {{
             background-color: #ffffff !important;
-        }
+        }}
             
                     /* Light theme for main content */
-        .main .block-container {
+        .main .block-container {{
             background-color: #ffffff !important;
-        }
+        }}
         
         /* Light theme for text elements */
-        .stMarkdown {
+        .stMarkdown {{
             color: #000000 !important;
-        }
+        }}
         
         /* Light theme for success/error messages */
-        .stAlert {
+        .stAlert {{
             background-color: #ffffff !important;
             color: #000000 !important;
-        }
+        }}
         
         /* Faculty card styling for light theme */
-        .faculty-card {
+        .faculty-card {{
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
             border: 2px solid #e0e0e0 !important;
             border-radius: 1rem !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-        }
+        }}
         
-        .faculty-card:hover {
+        .faculty-card:hover {{
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
             border-color: #2196f3 !important;
-        }
+        }}
         
         /* Light theme for success messages specifically */
-        .stAlert[data-baseweb="notification"] {
+        .stAlert[data-baseweb="notification"] {{
             background-color: #e8f5e8 !important;
             color: #2e7d32 !important;
             border-color: #4caf50 !important;
-        }
+        }}
         
         /* Light theme for all success messages - more specific */
-        .stAlert, .stAlert * {
+        .stAlert, .stAlert * {{
             color: #2e7d32 !important;
-        }
+        }}
         
         /* Light theme for success message text specifically */
-        .stAlert div, .stAlert span, .stAlert p {
+        .stAlert div, .stAlert span, .stAlert p {{
             color: #2e7d32 !important;
-        }
+        }}
         
         /* Light theme for all text elements */
-        .stText, .stMarkdown, .stSubheader, .stHeader, .stTitle {
+        .stText, .stMarkdown, .stSubheader, .stHeader, .stTitle {{
             color: #000000 !important;
-        }
+        }}
         
         /* Light theme for all heading elements */
-        h1, h2, h3, h4, h5, h6 {
+        h1, h2, h3, h4, h5, h6 {{
             color: #000000 !important;
-        }
+        }}
         
         /* Light theme for Streamlit headings */
-        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {{
             color: #000000 !important;
-        }
+        }}
         
         /* Light theme for sidebar text */
-        .css-1d391kg .stMarkdown {
+        .css-1d391kg .stMarkdown {{
             color: #000000 !important;
-        }
+        }}
             
             /* Light theme for critical alert headers */
-            .critical-alert-header {
+            .critical-alert-header {{
                 color: #d32f2f !important;
                 font-weight: bold !important;
-            }
+            }}
             
             /* Light theme for critical alerts section */
-            .critical-alerts-section {
+            .critical-alerts-section {{
                 color: #000000 !important;
-            }
+            }}
             
-            .critical-alerts-section h3 {
+            .critical-alerts-section h3 {{
                 color: #d32f2f !important;
-            }
+            }}
             
-            .critical-alerts-section .stMarkdown {
+            .critical-alerts-section .stMarkdown {{
                 color: #000000 !important;
-            }
+            }}
             
             /* Light theme for success messages in critical alerts section */
-            .critical-alerts-section .stAlert {
+            .critical-alerts-section .stAlert {{
                 background-color: #e8f5e8 !important;
                 color: #2e7d32 !important;
                 border-color: #4caf50 !important;
-            }
+            }}
             
             /* Light theme for success message text in critical alerts section - very specific */
             .critical-alerts-section .stAlert *,
             .critical-alerts-section .stAlert div,
             .critical-alerts-section .stAlert span,
-            .critical-alerts-section .stAlert p {
+            .critical-alerts-section .stAlert p {{
                 color: #2e7d32 !important;
                 font-weight: bold !important;
-            }
+            }}
             
             /* Light theme for custom success message */
-            .critical-alerts-section div[style*="background-color: #e8f5e8"] {
+            .critical-alerts-section div[style*="background-color: #e8f5e8"] {{
                 background-color: #e8f5e8 !important;
                 color: #2e7d32 !important;
                 border-left-color: #4caf50 !important;
-            }
+            }}
         </style>
         """, unsafe_allow_html=True)
     
